@@ -1,0 +1,445 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+body{
+    min-height: 100vh;
+    position: relative;
+    
+    background-color: #0a1028;
+    /*background-image: url("月光.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center center;*/
+    z-index: 1;
+}
+body::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: -99;
+
+}
+.bestdiv{
+    width: 1000px;
+    height: 600px;
+    background-color: blue;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    
+}
+.bigdiv{
+    position: relative;
+    width: 300px;
+    height: 600px;
+    overflow: hidden;
+    gap: 100px;
+}
+.bigdiv .card1{
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    background-color: azure;
+    
+}
+
+.bigdiv .card2{
+    position: absolute;
+    bottom: 300px;
+    width: 100%;
+    height: 50%;
+    background-color: beige;
+    transition: all .9s;
+}
+.bigdiv .card2:hover{
+    transform: translateY(-300px);
+}
+.rotate_card{
+    position: relative;
+    width: 180px;
+    height: 400px;
+    background-color: blanchedalmond;
+    
+}
+.rotate_card .card3{
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    background-color: #fff;
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    transition: all .9s;
+    z-index: 1;
+    backface-visibility: hidden;
+}
+.rotate_card .card4{
+    position:relative;
+    width: 100%;
+    height: 50%;
+    background-color: brown;
+    text-align: center;
+    font-weight: bold;
+    font-size: 40px;
+    transform: rotateY(180deg);
+    transition: all .9s;
+}
+.rotate_card:hover .card3{
+    transform: rotateY(180deg);
+}
+.rotate_card:hover .card4{
+    transform: rotateY(0);
+}
+
+.header{
+    width: 100%;
+    height: 100px;
+    background-color: black;
+    display: flex;
+    border-bottom:solid 3px orange;
+}
+.header .div1{
+    width: 17%;
+    height: 100%;
+    text-align: center;
+    line-height: 100px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #fff;
+    margin-right: 100px;
+}
+.div1 svg{
+    width: 30px;
+    height: 30px;
+}
+.header .div2{
+    width: 11%;
+    height: 100%;
+    text-align: center;
+    line-height: 100px;
+    font-size: 30px;
+    color: #fff;    
+    transition: all .8s;
+    margin-right: 25px;
+    cursor: pointer;
+}
+.div2 svg{
+    width: 20px;
+    height: 20px;
+}
+.div2 a{
+    text-decoration: none;
+    color:white ;
+}
+.header .div2:hover{
+    border-radius: 20px;
+    border: solid white 1px;
+}
+.header .searcher{
+    width: 300px;
+    height: 50px;
+    margin-top: 25px;
+    border-radius: 15px;
+    border:1px solid #fff;
+    background-color: grey;
+
+}
+.search-input{
+    margin-left: 30px;
+    width: 80%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: white;
+    color: black;
+    font-size: 20px
+}
+.mainword{
+    width: 85%;
+    height: 80px;
+    margin: 30px auto;
+    
+    line-height: 80px;
+    font-size: 60px;
+    color: #fff;
+}
+.mainword svg{
+    height: 60px;
+    width: 60px;
+}
+.maincount{
+    width: 85%;
+    height: 40px;
+    margin: 10px auto;
+    line-height: 40px;
+    font-size: 30px;
+    color: white;
+}
+
+.main1box{
+    width: 85%;
+    height: 400px;
+    margin:30px auto;
+}
+
+.main1box ul{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap:10px;
+    transition: all 1.2s;
+    list-style: none;
+}
+
+.main1box ul .items{
+    position: relative;
+    background-image: url("工具盒.png");
+    object-fit: contain;
+    overflow: hidden;
+}
+.main1box ul .items:nth-child(2){
+    background-image: url("交流.png");
+    object-fit: contain;
+}
+.main1box ul .items:nth-child(3){
+    background-image: url("生成咖啡温馨图片.png");
+    object-fit: contain;
+}
+.main1box ul .items:nth-child(4){
+    background-image: url("月光.jpg");
+    object-fit: contain;
+}
+.main1box:hover{
+    animation: border 3s;
+}
+.items p{
+    position: absolute;
+    text-align: center;
+    bottom: -100px;
+    left: 0;
+    color: #fff;
+    font-size: large;
+    padding: 20px;
+    transition: all .9s
+}
+.items:hover p{
+    bottom: 0;
+}
+@keyframes border {
+    0% {}
+    20% {border: 1px solid white;}
+    40% {}
+    60% {border: 1px solid white}
+    80%{}
+    100%{border: 1px solid white}
+}
+
+.main1box ul:has(.items:nth-child(1):hover) {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+}
+.main1box ul:has(.items:nth-child(2):hover) {
+    grid-template-columns: 1fr 2fr 1fr 1fr;
+}
+.main1box ul:has(.items:nth-child(3):hover) {
+    grid-template-columns: 1fr 1fr 2fr 1fr;
+}
+.main1box ul:has(.items:nth-child(4):hover) {
+    grid-template-columns: 1fr 1fr 1fr 2fr;
+}
+
+.ending{
+    width: 100%;
+    height: 100px;
+    background-color: black;
+    display: flex;
+    padding-left: 100px;
+    line-height: 100px;
+    color: #fff;
+    font-size: 10px;
+}
+
+.bigdiv_Project{
+    width: 85%;
+    height: 600px;
+    margin: 50px auto;
+    border-radius: 30px;
+    border:solid 2px #0a1028;
+    display: flex;
+    /*background-color: #fff;*/
+}
+
+.bigdiv_Project .right_column{
+    width: 20%;
+    height: 95%;
+    margin-top: 15px;
+    margin-left: 20px;
+    border-radius: 30px;
+    /*background-color: blue;*/
+    gap: 10px;
+    /*border-right: 5px solid black;*/
+    display: grid;
+    grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
+}
+
+.right_column .grid-item{
+    height: 85px; 
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(100, 150, 255, 0.2);
+    border-radius: 20px; 
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 500; color: #e0efff;
+    transition: all 0.3s ease; 
+    cursor: pointer;
+    border-radius: 30px;
+}
+
+.bigdiv_Project .left_column{
+    width: 75%;
+    height: 80%;
+    margin-top: 15px;
+    margin-left: 20px;
+    padding: 30px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(100, 150, 255, 0.2);
+    display: flex; align-items: center; justify-content: center;
+    color: #e0efff
+
+}
+/*这是介绍面板的css文字数据*/
+.content-title{
+    font-size: 32px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+.content-secondtitle{
+    font-size: 20px;
+    margin-bottom: 15px;
+    letter-spacing: 0.8px;
+}
+
+.content-else{
+    font-size: 14px;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    color: inherit;
+}
+.content-else a{
+    text-decoration: none;
+    color: inherit;
+}
+.content-immense{
+    font-size: 60px;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+/* 这是HELPER聊天页面 */
+.helper-page {
+  width: 100%;
+  margin: 30px auto;
+}
+.chat-wrapper {
+  width: 100%;
+  height: 650px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(100,150,255,0.2);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.chat-header {
+  padding: 18px 24px;
+  background: rgba(0,0,0,0.3);
+  font-size: 20px;
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+}
+.chat-body {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.msg {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.msg-user {
+  justify-content: flex-end;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #6496ff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.bubble {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #fff;
+}
+.msg-bot .bubble {
+  background: rgba(100,150,255,0.15);
+  border: 1px solid rgba(100,150,255,0.3);
+}
+.msg-user .bubble {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.loading {
+  color: #6496ff;
+  padding: 10px 0;
+  text-align: center;
+}
+.chat-footer {
+  display: flex;
+  gap: 10px;
+  padding: 16px 20px;
+  background: rgba(0,0,0,0.2);
+}
+.chat-input {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(100,150,255,0.3);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  outline: none;
+  font-size: 15px;
+}
+.send-btn {
+  padding: 0 22px;
+  border-radius: 12px;
+  background: #6496ff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
