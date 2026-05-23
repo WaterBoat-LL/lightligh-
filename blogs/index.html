@@ -1,131 +1,350 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <link rel="stylesheet" href="tool_style.css">
-        
-    </head>
-    <body>
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-     <div  id="app">
-        <div class="header">
-            <div class="div1"><svg t="1772617863348" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2346" data-spm-anchor-id="a313x.collections_detail.0.i6.382d3a81i2KnF6" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M632.9344 581.9392a30.72 30.72 0 0 0 47.4112-39.1168 206.9504 206.9504 0 0 0-65.1264-52.4288 135.7824 135.7824 0 1 0-189.44 0 207.1552 207.1552 0 0 0-112.64 184.32 30.72 30.72 0 0 0 61.44 0 145.5616 145.5616 0 0 1 257.9456-92.5696zM446.208 393.0624a74.3936 74.3936 0 1 1 74.3936 74.3936 74.4448 74.4448 0 0 1-74.3936-74.3936z" fill="#A46CF4" p-id="2347"></path><path d="M795.0336 579.2768a30.72 30.72 0 0 0-43.4176-1.3312l-113.8176 107.2128-46.08-48.9472a30.72 30.72 0 0 0-44.6976 42.1888L614.4 749.6192a30.72 30.72 0 0 0 43.4176 1.28l136.0896-128a30.72 30.72 0 0 0 1.1264-43.6224z" fill="#A46CF4" p-id="2348"></path><path d="M517.7856 983.04a471.04 471.04 0 1 1 471.04-471.04 471.3472 471.3472 0 0 1-471.04 471.04z m0-880.2304a409.6 409.6 0 1 0 409.6 409.6 409.856 409.856 0 0 0-409.6-410.0096z" fill="#d81e06" p-id="2349" data-spm-anchor-id="a313x.collections_detail.0.i7.382d3a81i2KnF6" class="selected"></path></svg>TOOLBOX</div>
-            <div class="div2" @click="active_Page = 'menu'" :class="{ active: active_Page === 'menu'}"><svg t="1772617418519" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1107" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M361.2672 481.8944H205.4144a117.76 117.76 0 0 1-117.76-117.76v-155.648a117.76 117.76 0 0 1 117.76-117.76h155.8528a117.76 117.76 0 0 1 117.76 117.76v155.8528a117.76 117.76 0 0 1-117.76 117.5552zM205.4144 152.3712a56.32 56.32 0 0 0-56.32 56.32v155.648a56.32 56.32 0 0 0 56.32 56.32h155.8528a56.32 56.32 0 0 0 56.32-56.32V208.4864a56.32 56.32 0 0 0-56.32-56.32zM818.5856 481.8944h-155.8528a117.76 117.76 0 0 1-117.76-117.76v-155.648a117.76 117.76 0 0 1 117.76-117.76h155.8528a117.76 117.76 0 0 1 117.76 117.76v155.8528a117.76 117.76 0 0 1-117.76 117.5552z m-155.8528-329.5232a56.32 56.32 0 0 0-56.32 56.32v155.648a56.32 56.32 0 0 0 56.32 56.32h155.8528a56.32 56.32 0 0 0 56.32-56.32V208.4864a56.32 56.32 0 0 0-56.32-56.32zM361.2672 941.4656H205.4144a117.76 117.76 0 0 1-117.76-117.76v-155.648a117.76 117.76 0 0 1 117.76-117.76h155.8528a117.76 117.76 0 0 1 117.76 117.76v155.8528a117.76 117.76 0 0 1-117.76 117.5552z m-155.8528-329.5232a56.32 56.32 0 0 0-56.32 56.32v155.8528a56.32 56.32 0 0 0 56.32 56.32h155.8528a56.32 56.32 0 0 0 56.32-56.32v-156.0576a56.32 56.32 0 0 0-56.32-56.32z" fill="#f4ea2a" p-id="1108"></path><path d="M818.5856 941.4656h-155.8528a117.76 117.76 0 0 1-117.76-117.76v-155.648a117.76 117.76 0 0 1 117.76-117.76h155.8528a117.76 117.76 0 0 1 117.76 117.76v155.8528a117.76 117.76 0 0 1-117.76 117.5552z m-155.8528-329.5232a56.32 56.32 0 0 0-56.32 56.32v155.8528a56.32 56.32 0 0 0 56.32 56.32h155.8528a56.32 56.32 0 0 0 56.32-56.32v-156.0576a56.32 56.32 0 0 0-56.32-56.32z" fill="#f4ea2a" p-id="1109"></path></svg>MENU</a></div>
-            <div class="div2" @click="active_Page = 'project'" :class="{ active: active_Page === 'project'}"><svg t="1772617539221" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1682" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M761.1904 135.5264h-73.1648v-42.4448a30.72 30.72 0 0 0-61.44 0v42.4448h-229.376v-42.4448a30.72 30.72 0 1 0-61.44 0v42.4448H259.584a174.08 174.08 0 0 0-174.08 174.08v454.144a174.08 174.08 0 0 0 174.08 174.08h501.76a174.08 174.08 0 0 0 174.08-174.08v-454.144a174.08 174.08 0 0 0-174.2336-174.08z m112.64 628.224a112.64 112.64 0 0 1-112.64 112.64h-501.76a112.64 112.64 0 0 1-112.64-112.64v-454.144a112.64 112.64 0 0 1 112.64-112.64h76.3392v66.56a30.72 30.72 0 0 0 61.44 0v-66.56h229.376v66.56a30.72 30.72 0 1 0 61.44 0v-66.56h73.1648a112.64 112.64 0 0 1 112.64 112.64z" fill="#1afa29" p-id="1683"></path><path d="M705.3312 513.5872H323.9424a30.72 30.72 0 0 1 0-61.44h381.3888a30.72 30.72 0 0 1 0 61.44zM615.1168 711.1168H323.9424a30.72 30.72 0 0 1 0-61.44h291.1744a30.72 30.72 0 1 1 0 61.44z" fill="#1afa29" p-id="1684"></path></svg>PART</div>
-            <div class="div2" @click="active_Page = 'blogs'" :class="{ active: active_Page === 'blogs'}"><svg t="1772617553085" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1988" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M510.1568 972.8a170.24 170.24 0 0 1-86.0672-23.296l-250.88-146.8928a170.8032 170.8032 0 0 1-84.1216-147.968l1.8432-290.6112a170.7008 170.7008 0 0 1 86.0672-146.944l252.6208-143.7184a170.7008 170.7008 0 0 1 170.2912 1.0752l250.88 146.8928a170.9056 170.9056 0 0 1 84.1216 148.0192l-1.8432 290.6112a170.8032 170.8032 0 0 1-86.0672 146.944l-252.6208 143.7184A170.0352 170.0352 0 0 1 510.1568 972.8z m3.6864-860.16a108.9536 108.9536 0 0 0-53.8624 14.2336L207.4112 270.4896a109.1584 109.1584 0 0 0-55.04 93.9008l-1.8432 290.6624a109.1072 109.1072 0 0 0 53.8624 94.6176l250.88 146.8928a109.1584 109.1584 0 0 0 108.9024 0.6656l252.5696-143.7184a109.1584 109.1584 0 0 0 55.04-93.9008l1.8432-290.6624a109.1072 109.1072 0 0 0-53.8624-94.6176l-250.88-146.8928A108.8 108.8 0 0 0 513.8432 112.64z" fill="#d81e06" p-id="1989"></path><path d="M712.5504 384.6144a30.72 30.72 0 0 0-42.3936-9.4208L512 475.5968 353.8432 375.1936a30.72 30.72 0 1 0-32.9216 51.8656L481.28 528.896v186.6752a30.72 30.72 0 0 0 61.44 0V528.896l160.3584-101.8368a30.72 30.72 0 0 0 9.472-42.4448z" fill="#d81e06" p-id="1990"></path></svg>HELPER</div>
-            <div class="div2" @click="active_Page = 'pictures'" :class="{ active: active_Page === 'pictures'}"><svg t="1772638991258" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2074" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M693.717333 160.789333a64 64 0 0 1 64 64v63.082667l192.021334 0.021333v128a106.666667 106.666667 0 0 1-106.666667 106.666667h-85.354667v43.562667a192 192 0 0 1-192 192h-298.666666a192 192 0 0 1-192-192v-341.333334a64 64 0 0 1 64-64h554.666666z m0 42.666667h-554.666666a21.333333 21.333333 0 0 0-21.333334 21.333333v341.333334a149.333333 149.333333 0 0 0 149.333334 149.333333h298.666666a149.333333 149.333333 0 0 0 149.333334-149.333333v-341.333334a21.333333 21.333333 0 0 0-21.333334-21.333333z m213.354667 127.104h-149.333333v149.333333h85.333333a64 64 0 0 0 64-64v-85.333333zM64.042667 885.802667h704v-42.666667h-704v42.666667z" p-id="2075" fill="#f4ea2a"></path></svg>THANKS</div>
-            <div class="searcher">
-                <input type="text" class="search-input" placeholder="🔍search...">
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="TOOLBOX_Lully - 个人工具站与智能体入口" />
+    <title>TOOLBOX_Lully</title>
+    <link rel="stylesheet" href="tool_style.css" />
+  </head>
+  <body>
+    <div id="app" class="app-shell" @click="menuOpen = false">
+      <header class="site-header">
+        <a class="brand" href="#" @click.prevent.stop="active_Page = 'menu'; menuOpen = false" aria-label="TOOLBOX_Lully">
+          <span class="brand-mark">
+            <img src="个人认证.svg" alt="" />
+          </span>
+          <span class="brand-copy">
+            <strong>TOOLBOX</strong>
+            <small>Lully Lab</small>
+          </span>
+        </a>
+
+        <div class="command-bar">
+          <label class="search-box" aria-label="搜索">
+            <span>⌘</span>
+            <input v-model.trim="searchText" type="text" placeholder="search toolbox..." />
+          </label>
+
+          <div class="menu-hub" @click.stop>
+            <button
+              type="button"
+              class="menu-trigger"
+              :class="{ active: menuOpen }"
+              :aria-expanded="String(menuOpen)"
+              aria-controls="site-menu"
+              aria-label="打开导航菜单"
+              @click="menuOpen = !menuOpen"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+            <nav id="site-menu" class="nav-dropdown" :class="{ open: menuOpen }" aria-label="主导航">
+              <button
+                v-for="item in navItems"
+                :key="item.key"
+                type="button"
+                class="nav-item"
+                :class="{ active: active_Page === item.key }"
+                @click="active_Page = item.key; menuOpen = false"
+              >
+                <span class="nav-icon"><img :src="item.icon" alt="" /></span>
+                <span>
+                  <strong>{{ item.label }}</strong>
+                  <small>{{ item.desc }}</small>
+                </span>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section v-show="active_Page === 'menu'" class="page page-menu">
+          <div class="hero-grid">
+            <div class="hero-panel">
+              <div class="eyebrow">
+                <span class="pulse-dot"></span>
+                ONLINE WORKSPACE
+              </div>
+              <h1>你好，很高兴认识你。</h1>
+              <p class="hero-text">
+                这里是 Lully 的个人工具站：把机械、电路、代码和智能体入口收纳在一个更清爽的极客工作台里。
+              </p>
+
+              <div class="time-board" aria-label="累计陪伴时间">
+                <div class="time-item">
+                  <strong>{{ day }}</strong>
+                  <span>Days</span>
+                </div>
+                <div class="time-item">
+                  <strong>{{ hour }}</strong>
+                  <span>Hours</span>
+                </div>
+                <div class="time-item">
+                  <strong>{{ minute }}</strong>
+                  <span>Minutes</span>
+                </div>
+                <div class="time-item">
+                  <strong>{{ second }}</strong>
+                  <span>Seconds</span>
+                </div>
+              </div>
             </div>
-        </div>
-        <div class="mainword" v-show="active_Page === 'menu'"><svg t="1772618046768" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6750" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M926.496 370.208l44.864-84.16c-111.008-83.52-207.296 116.224-224.608 180.384-17.312 64.16-44.8 61.6-44.8 61.6-46.528-7.488-117.312-97.504-190.432-185.344L225.888 17.856S180.064-12.192 149.504 5.632c-30.56 17.856-15.264 64.16-15.264 64.16 5.76 7.84 259.872 343.04 250.528 345.728-14.08 4.032-23.712-14.112-121.024-129.504l-58.976 106.08-132.128 266.976c64.384 108.544 136.928 198.656 202.56 265.248C338.688 988.8 426.08 1024 516.544 1024a341.76 341.76 0 0 0 333.664-266.528c13.6-60.48 26.912-147.776 37.568-281.344l38.72-105.92z" fill="#F4C534" p-id="6751"></path><path d="M72.608 659.104s59.744 40.384 81.12 51.936c21.376 11.552 52.608 5.76 63.488-10.176 10.848-15.968 19.008-43.104-4.064-69.248 0 0 31.232 21.376 65.504 14.592 34.272-6.784 43.776-51.584 38.368-66.208-5.44-14.592-68.896-84.192-97.088-106.944 0 0 50.24 36.672 66.528 42.08 16.288 5.44 48.192-1.344 61.088-27.84 12.896-26.464 11.872-52.288 0-68.224-11.872-15.968-57.376-55.68-57.376-55.68s-6.752-57.664-26.464-77.344c-19.68-19.68-63.136-18.656-82.816 0s-45.152 58.4-29.536 103.52c15.616 45.152 12.576 35.296 12.576 35.296s-41.76-25.472-65.184-9.152c-23.424 16.288-46.176 54.656-31.232 86.88 14.944 32.256 29.184 45.472 29.184 45.472s-32.576 26.816-42.08 62.112c-9.504 35.328 17.984 48.928 17.984 48.928z" fill="#E9B02C" p-id="6752"></path><path d="M245.472 457.792s11.712-43.264 40.992-48.384c0 0 40.64 9.952 54.976 31.328 14.368 21.344-16.288 71.296-51.424 62.112 0.032 0-37.92-19.84-44.544-45.056zM262.848 634.048c28.352-4.096 43.36-20.928 43.392-52.064a11.424 11.424 0 0 0-2.592-7.2c-6.432-7.68-24.288-26.784-44.32-28.416-25.12-2.048-49.216 26.144-39.392 48.192 8.16 18.272 22.816 31.2 32.448 37.216a15.264 15.264 0 0 0 10.464 2.272zM143.904 672.672s15.264 21.12 30.816 23.68c15.52 2.56 40.992-16.8 39.456-33.6-1.536-16.8-35.104-30.56-35.104-30.56s-26.88 12.864-35.168 40.48z" fill="#E9EFF4" p-id="6753"></path><path d="M213.152 631.584a425.088 425.088 0 0 1-116.416-83.52l116.416 83.52zM219.936 473.088s-37.184-26.048-56-48.192c0.736-0.48 10.208 25.216 56 48.192z" fill="#DE9C25" p-id="6754"></path></svg>你好，很高兴认识你 </div>
-        <div class="maincount" v-show="active_Page === 'menu'">我们已经陪伴了你{{day}}天{{hour}}时{{minute}}分{{second}}秒</div>
-        <div class="main1box" v-show="active_Page === 'menu'">
-            <ul>
-                <li class="items"><p>tool</p></li>
-                <li class="items"><p>communication</p></li>
-                <li class="items"><p>fun</p></li>
-                <li class="items"><p>help</p></li>
-            </ul>
-     </div>
-    
-     <div id="app">
-        <div class="bigdiv_Project" v-show="active_Page === 'project'">
-            <div class="right_column">
-                <div class="grid-item" :class="{ active: activeTab === 'tab1'}" @click="activeTab = 'tab1'">介绍</div>
-                <div class="grid-item" :class="{ active: activeTab === 'tab2'}" @click="activeTab = 'tab2'">机械结构工程者</div>
-                <div class="grid-item" :class="{ active: activeTab === 'tab3'}" @click="activeTab = 'tab3'">电路与PLC使用者</div>
-                <div class="grid-item" :class="{ active: activeTab === 'tab4'}" @click="activeTab = 'tab4'">友链</div>
+
+            <aside class="console-panel" aria-label="站点状态">
+              <div class="console-header">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div class="console-body">
+                <p><span>$</span> boot toolbox_lully</p>
+                <p><span>></span> theme: night / orange / neon</p>
+                <p><span>></span> modules: tools, ai-helper, notes, links</p>
+                <p><span>></span> status: ready</p>
+              </div>
+            </aside>
+          </div>
+
+          <div class="section-heading">
+            <div>
+              <p>MODULES</p>
+              <h2>快速入口</h2>
             </div>
-            <div class="left_column">
-                <div v-show="activeTab === 'tab1'">
-                    <p class="content-immense">Bienvenue!</p>
-                    <p class="content-else">这是Lully的第一个网站，一名热爱机械、电路、代码的综合型创作者。喜欢把复杂技术变简单，把实战经验写成笔记，把想法做成可运行的项目。欢迎来到我的个人博客，一起学习、交流、共同进步。目前，博客内只有我的智能体，内容将进行持续的更新</p>
+            <span>{{ filteredCards.length }} active nodes</span>
+          </div>
+
+          <div class="feature-grid">
+            <article
+              v-for="card in filteredCards"
+              :key="card.title"
+              class="feature-card"
+              :style="{ backgroundImage: 'linear-gradient(180deg, rgba(10,16,40,.06), rgba(10,16,40,.86)), url(' + card.image + ')' }"
+            >
+              <div class="feature-icon">
+                <img :src="card.icon" alt="" />
+              </div>
+              <div>
+                <p>{{ card.kicker }}</p>
+                <h3>{{ card.title }}</h3>
+                <span>{{ card.desc }}</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section v-show="active_Page === 'project'" class="page page-project">
+          <div class="panel-layout">
+            <aside class="side-panel">
+              <p class="side-label">PART DIRECTORY</p>
+              <button
+                v-for="tab in projectTabs"
+                :key="tab.key"
+                type="button"
+                class="project-tab"
+                :class="{ active: activeTab === tab.key }"
+                @click="activeTab = tab.key"
+              >
+                <span>{{ tab.index }}</span>
+                <strong>{{ tab.title }}</strong>
+              </button>
+            </aside>
+
+            <article class="content-panel">
+              <p class="eyebrow">{{ activeProject.kicker }}</p>
+              <h2>{{ activeProject.title }}</h2>
+              <p class="content-lead">{{ activeProject.lead }}</p>
+
+              <div class="content-list">
+                <div v-for="item in activeProject.points" :key="item" class="content-row">
+                  <span></span>
+                  <p>{{ item }}</p>
                 </div>
-                <div v-show="activeTab === 'tab2'">
-                    <p class="content-title">机械结构工程者</p>
-                    <p class="content-else">机械结构工程者是Lully运用百度云千帆平台开发的一个专注于机械结构，有限元分析等方面的综合智能体，能为你线下创作产品，线上使用solidworks提供较为可靠的意见。</p>
-                    <p class="content-secondtitle">为什么选择机械结构工程者？</p>
-                    <p class="content-else">1.初学者友好，可以为你逐步引导</p>
-                    <p class="content-else">2.以《机械设计手册》，《有限元分析》，《机械原理》等为数据集，为你设计结构提供全方面的建议。</p>
-                    <p class="content-else">3.可以帮你解决solidworks问题，还能进行连网搜索。</p>
-                </div>
-                <div v-show="activeTab === 'tab3'" >
-                    <p class="content-title">电路与PLC使用者</p>
-                    <p class="content-else">电路与PLC使用者是Lully运用百度云千帆平台设计的一个可以在电路与PLC设计上提供建议的综合智能体。</p>
-                    <p class="content-secondtitle">选择电路与PLC使用者的理由：</p>
-                    <p class="content-else">1.他对S7-1500系列CPU和TIA Portal软件熟悉，会给你较为靠谱的建议</p>
-                    <p class="content-else">2.以《模拟电子技术》与《电路分析》为数据集，为你解决电路问题提供可行性建议。</p>
-                </div>
-                <div v-show="activeTab === 'tab4'">
-                    <p class="content-title">Lully今日网页的搭建离不开兄弟亲友们的大力帮助，如果你喜欢我们的网页，不妨为我们的网页点一个star吧！</p>
-                    <p class="content-else"><a href="https://jundengweb.pages.dev/">1.JUN的个人博客</a></p>
-                </div>
+              </div>
+
+              <a v-if="activeProject.link" class="link-chip" :href="activeProject.link" target="_blank" rel="noopener">
+                访问友链
+              </a>
+            </article>
+          </div>
+        </section>
+
+        <section v-show="active_Page === 'blogs'" class="page page-helper">
+          <div class="frame-shell">
+            <div class="frame-info">
+              <p class="eyebrow">AI HELPER</p>
+              <h2>智能体助手</h2>
+              <p>集成百度智能体嵌入页，用于机械、电路、PLC 与工程学习场景的快速咨询。</p>
             </div>
-        </div>
-     </div>
-     <div id="app">
-        <div class="helper-page" v-show="active_Page === 'blogs'">
-            <iframe src="view.html" frameborder="0" width="100%" height="100%" allowfullscreen></iframe>
-        </div>
-     </div>
+            <div class="iframe-card">
+              <iframe src="view.html" title="智能体助手" frameborder="0" allowfullscreen></iframe>
+            </div>
+          </div>
+        </section>
 
-        <div class="ending">© 2026 TOOLBOX_Lully | All Rights Reserved</div>     
-        </div>
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
-        <script>
-            new Vue({
-                el : '#app',
-                data(){
-                    return{
-                        active_Page: 'menu',
-                        activeTab: 'tab1',
-                    
-                        setTime: new Date("2026-03-04 00:00:00").getTime(),// 起始时间
-                        day: 0,
-                        hour: 0,
-                        minute: 0,
-                        second: 0,
-                        timer: null
-                }
-                },
-                methods: {
-                    showtime() {
-                    const now = new Date().getTime();
-                    const difference = now - this.setTime; // 现在定义 difference
+        <section v-show="active_Page === 'pictures'" class="page page-thanks">
+          <div class="thanks-panel">
+            <img src="月光.jpg" alt="月光背景" />
+            <div>
+              <p class="eyebrow">THANKS</p>
+              <h2>感谢每一位同行者</h2>
+              <p>
+                今日网页的搭建离不开朋友们的帮助。如果你喜欢这个工具站，欢迎为项目点亮 star，也欢迎一起交流学习。
+              </p>
+              <a href="https://jundengweb.pages.dev/" target="_blank" rel="noopener">JUN 的个人博客</a>
+            </div>
+          </div>
+        </section>
+      </main>
 
-                    const msperday = 1000 * 60 * 60 * 24;
-                    const msperhour = 1000 * 60 * 60;
-                    const msperminute = 1000 * 60;
+      <footer class="site-footer">
+        <span>© 2026 TOOLBOX_Lully</span>
+        <span>All Rights Reserved</span>
+      </footer>
+    </div>
 
-                    this.day = Math.floor(difference / msperday);
-                    this.hour = Math.floor((difference % msperday) / msperhour);
-                    this.minute = Math.floor((difference % msperhour) / msperminute);
-                    this.second = Math.floor((difference % msperminute) / 1000);
-                
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <script>
+      new Vue({
+        el: '#app',
+        data() {
+          return {
+            active_Page: 'menu',
+            activeTab: 'intro',
+            menuOpen: false,
+            searchText: '',
+            setTime: new Date('2026-03-04 00:00:00').getTime(),
+            day: 0,
+            hour: 0,
+            minute: 0,
+            second: 0,
+            timer: null,
+            navItems: [
+              { key: 'menu', label: 'MENU', desc: '首页与模块入口', icon: '菜单.svg' },
+              { key: 'project', label: 'PART', desc: '项目与智能体介绍', icon: '分类.svg' },
+              { key: 'blogs', label: 'HELPER', desc: '嵌入式 AI 助手', icon: '服务.svg' },
+              { key: 'pictures', label: 'THANKS', desc: '友链与致谢', icon: '发现.svg' }
+            ],
+            featureCards: [
+              {
+                kicker: '01 / Utility',
+                title: 'tool',
+                desc: '常用工具与工程入口',
+                image: '工具盒.png',
+                icon: '工具.svg'
+              },
+              {
+                kicker: '02 / Network',
+                title: 'communication',
+                desc: '交流链接与协作资源',
+                image: '交流.png',
+                icon: '个人认证.svg'
+              },
+              {
+                kicker: '03 / Create',
+                title: 'fun',
+                desc: '灵感实验和视觉生成',
+                image: '生成咖啡温馨图片.png',
+                icon: '攻略.svg'
+              },
+              {
+                kicker: '04 / Help',
+                title: 'help',
+                desc: '智能体助手与学习支持',
+                image: '月光.jpg',
+                icon: '服务.svg'
+              }
+            ],
+            projectTabs: [
+              {
+                key: 'intro',
+                index: '00',
+                kicker: 'WELCOME',
+                title: 'Bienvenue!',
+                lead:
+                  '这是 Lully 的第一个网站。它面向机械、电路、代码和智能体创作，把复杂技术整理成更容易使用的个人工作台。',
+                points: [
+                  '持续记录实战经验、学习笔记和可运行的小项目。',
+                  '当前重点是智能体助手和工程学习入口。',
+                  '后续会继续补充工具、博客内容与更多交互模块。'
+                ]
+              },
+              {
+                key: 'mechanical',
+                index: '01',
+                kicker: 'MECHANICAL AGENT',
+                title: '机械结构工程者',
+                lead:
+                  '面向机械结构、有限元分析、SolidWorks 使用等场景的综合智能体，适合从方案构思到结构验证的辅助学习。',
+                points: [
+                  '对初学者友好，可以逐步引导设计思路。',
+                  '参考机械设计、有限元分析和机械原理等知识体系。',
+                  '能够围绕 SolidWorks 问题提供结构化建议。'
+                ]
+              },
+              {
+                key: 'circuit',
+                index: '02',
+                kicker: 'PLC & CIRCUIT AGENT',
+                title: '电路与 PLC 使用者',
+                lead:
+                  '面向电路分析、PLC 设计、S7-1500 与 TIA Portal 学习场景，提供更聚焦的工程建议。',
+                points: [
+                  '熟悉 S7-1500 系列 CPU 与 TIA Portal 基础流程。',
+                  '参考模拟电子技术和电路分析知识体系。',
+                  '适合用于方案排查、学习提纲和问题拆解。'
+                ]
+              },
+              {
+                key: 'links',
+                index: '03',
+                kicker: 'FRIENDS',
+                title: '友链与致谢',
+                lead:
+                  '这个网页的搭建离不开朋友们的帮助。如果你喜欢这个项目，欢迎交流、反馈或为它点亮 star。',
+                points: ['JUN 的个人博客是当前友链入口。', '更多合作链接会在后续版本中继续补充。'],
+                link: 'https://jundengweb.pages.dev/'
+              }
+            ]
+          };
+        },
+        computed: {
+          filteredCards() {
+            const keyword = this.searchText.toLowerCase();
+            if (!keyword) return this.featureCards;
+            return this.featureCards.filter((card) => {
+              return [card.title, card.kicker, card.desc].join(' ').toLowerCase().includes(keyword);
+            });
+          },
+          activeProject() {
+            return this.projectTabs.find((tab) => tab.key === this.activeTab) || this.projectTabs[0];
+          }
+        },
+        methods: {
+          showtime() {
+            const now = new Date().getTime();
+            const difference = Math.max(0, now - this.setTime);
+            const msPerDay = 1000 * 60 * 60 * 24;
+            const msPerHour = 1000 * 60 * 60;
+            const msPerMinute = 1000 * 60;
 
-                }
-            },
-            mounted() {
-                this.showtime();
-                this.timer = setInterval(() => {
-                this.showtime();
-                     }, 1000);
-            },
-            beforeDestroy() {
-            clearInterval(this.timer); 
-            }
-        })
-        </script>
-    </body>
+            this.day = Math.floor(difference / msPerDay);
+            this.hour = Math.floor((difference % msPerDay) / msPerHour);
+            this.minute = Math.floor((difference % msPerHour) / msPerMinute);
+            this.second = Math.floor((difference % msPerMinute) / 1000);
+          }
+        },
+        mounted() {
+          this.showtime();
+          this.timer = setInterval(this.showtime, 1000);
+        },
+        beforeDestroy() {
+          clearInterval(this.timer);
+        }
+      });
+    </script>
+  </body>
 </html>
