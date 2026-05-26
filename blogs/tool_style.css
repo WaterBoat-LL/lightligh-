@@ -1159,6 +1159,14 @@ main {
     grid-template-columns: 1fr;
   }
 
+  .intro-scene {
+    min-height: calc(100vh - 60px);
+  }
+
+  .intro-overlay {
+    min-height: calc(100vh - 60px);
+  }
+
   .feature-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1290,6 +1298,464 @@ main {
   .site-footer span {
     display: block;
     margin-bottom: 6px;
+  }
+
+  .page-intro {
+    margin-left: -12px;
+    margin-right: -12px;
+    width: calc(100% + 24px);
+  }
+
+  .intro-scene {
+    min-height: calc(100vh - 50px);
+  }
+
+  .intro-overlay {
+    min-height: calc(100vh - 50px);
+  }
+
+  .boat-body {
+    width: 60px;
+    height: 16px;
+  }
+
+  .boat-sail {
+    height: 38px;
+  }
+
+  .boat-sail::before {
+    border-left-width: 22px;
+    border-bottom-width: 28px;
+  }
+}
+
+/* ===== Introduction 粒子主页 ===== */
+.page-intro {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 180px);
+  padding: 0;
+  margin-top: -46px;
+  margin-left: calc(-1 * clamp(16px, 4vw, 54px));
+  margin-right: calc(-1 * clamp(16px, 4vw, 54px));
+  width: calc(100% + 2 * clamp(16px, 4vw, 54px));
+}
+
+.intro-scene {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  overflow: hidden;
+}
+
+#particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.intro-overlay {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(100, 60, 180, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 80%, rgba(20, 40, 80, 0.3) 0%, transparent 50%),
+    linear-gradient(180deg, #060b1a 0%, #0c1530 40%, #1a2550 60%, #0a1020 100%);
+}
+
+/* 河流场景 */
+.river-scene {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48%;
+  overflow: hidden;
+}
+
+.river-water {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg,
+    rgba(10, 20, 50, 0) 0%,
+    rgba(15, 30, 70, 0.4) 20%,
+    rgba(20, 40, 90, 0.6) 50%,
+    rgba(30, 50, 100, 0.5) 80%,
+    rgba(25, 45, 85, 0.3) 100%);
+  animation: waterFlow 8s ease-in-out infinite;
+}
+
+@keyframes waterFlow {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-8px); }
+}
+
+.river-reflection {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg,
+    rgba(20, 40, 90, 0.3) 0%,
+    rgba(15, 30, 70, 0.2) 30%,
+    rgba(10, 20, 50, 0.15) 60%,
+    rgba(8, 15, 40, 0.1) 100%);
+  transform: scaleY(-1);
+  opacity: 0.6;
+  filter: blur(2px);
+}
+
+/* 小舟 */
+.boat {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  animation: boatFloat 6s ease-in-out infinite;
+}
+
+@keyframes boatFloat {
+  0%, 100% { transform: translateX(-50%) translateY(0) rotate(-1deg); }
+  50% { transform: translateX(-50%) translateY(-6px) rotate(1deg); }
+}
+
+.boat-body {
+  width: 80px;
+  height: 20px;
+  background: linear-gradient(180deg, #8B6914 0%, #6B4F10 100%);
+  border-radius: 0 0 40px 40px;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.boat-body::before {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: -5px;
+  right: -5px;
+  height: 8px;
+  background: linear-gradient(180deg, #5C4210 0%, #3D2B08 100%);
+  border-radius: 0 0 50px 50px;
+}
+
+.boat-sail {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 50px;
+  background: linear-gradient(180deg, #f0e6d0 0%, #d4c4a0 100%);
+}
+
+.boat-sail::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 2px;
+  width: 0;
+  height: 0;
+  border-left: 28px solid rgba(240, 230, 210, 0.85);
+  border-top: 8px solid transparent;
+  border-bottom: 35px solid transparent;
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+}
+
+.boat-reflection {
+  top: auto;
+  bottom: 28%;
+  opacity: 0.25;
+  filter: blur(3px) scaleY(-1);
+  animation: boatFloatReflect 6s ease-in-out infinite;
+}
+
+@keyframes boatFloatReflect {
+  0%, 100% { transform: translateX(-50%) translateY(0) rotate(1deg); }
+  50% { transform: translateX(-50%) translateY(4px) rotate(-1deg); }
+}
+
+/* 网站标题 */
+.intro-title {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.intro-title.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.intro-title h1 {
+  font-family: var(--display-font);
+  font-size: clamp(36px, 7vw, 80px);
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  text-shadow:
+    0 0 40px rgba(164, 108, 244, 0.6),
+    0 0 80px rgba(164, 108, 244, 0.3),
+    0 0 120px rgba(100, 60, 180, 0.2);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.intro-subtitle {
+  margin-top: 16px;
+  color: rgba(200, 210, 240, 0.7);
+  font-size: clamp(14px, 2vw, 18px);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ===== Projects 项目管理页 ===== */
+.page-projects {
+  padding: 0;
+}
+
+.projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.projects-header h2 {
+  margin: 6px 0 0;
+  font-family: var(--display-font);
+  font-size: 28px;
+}
+
+.add-project-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid rgba(164, 108, 244, 0.6);
+  border-radius: 14px;
+  color: var(--text);
+  background: rgba(164, 108, 244, 0.12);
+  font-family: var(--display-font);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.add-project-btn:hover {
+  border-color: var(--purple);
+  background: rgba(164, 108, 244, 0.22);
+  box-shadow: 0 0 20px rgba(164, 108, 244, 0.2);
+}
+
+.add-project-btn span {
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.add-project-form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  backdrop-filter: blur(18px);
+  animation: pageIn 0.2s ease both;
+}
+
+.add-project-form input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.065);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.add-project-form input:focus {
+  border-color: var(--purple);
+}
+
+.add-project-form input::placeholder {
+  color: rgba(246, 248, 255, 0.4);
+}
+
+.submit-project-btn {
+  min-height: 48px;
+  padding: 0 22px;
+  border: 1px solid rgba(164, 108, 244, 0.6);
+  border-radius: 12px;
+  color: var(--text);
+  background: rgba(164, 108, 244, 0.2);
+  font-family: var(--display-font);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.submit-project-btn:hover:not(:disabled) {
+  background: rgba(164, 108, 244, 0.35);
+  box-shadow: 0 0 16px rgba(164, 108, 244, 0.25);
+}
+
+.submit-project-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.project-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  min-height: 200px;
+  padding: 28px 20px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--panel);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(18px);
+  cursor: pointer;
+  transition: transform 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease;
+}
+
+.project-card:hover {
+  border-color: rgba(164, 108, 244, 0.6);
+  box-shadow: 0 16px 48px rgba(164, 108, 244, 0.15);
+  transform: translateY(-4px);
+}
+
+.delete-project-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(216, 30, 6, 0.4);
+  border-radius: 10px;
+  color: var(--red);
+  background: rgba(216, 30, 6, 0.08);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.project-card:hover .delete-project-btn {
+  opacity: 1;
+}
+
+.delete-project-btn:hover {
+  border-color: var(--red);
+  background: rgba(216, 30, 6, 0.2);
+  color: #ff4d4d;
+}
+
+.project-card-icon {
+  width: 64px;
+  height: 64px;
+  border: 2px solid rgba(164, 108, 244, 0.5);
+  border-radius: 18px;
+  background: rgba(164, 108, 244, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-card-icon span {
+  font-family: var(--display-font);
+  font-size: 28px;
+  color: var(--purple);
+  font-weight: 700;
+}
+
+.project-card-name {
+  margin: 0;
+  font-family: var(--display-font);
+  font-size: 16px;
+  color: var(--text);
+  text-align: center;
+  word-break: break-all;
+}
+
+.project-card-date {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  font-family: "Cascadia Code", Consolas, monospace;
+}
+
+.projects-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.projects-empty p {
+  color: var(--muted);
+  font-size: 16px;
+}
+
+@media (max-width: 680px) {
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .add-project-form {
+    flex-direction: column;
+  }
+
+  .submit-project-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
   }
 }
 
