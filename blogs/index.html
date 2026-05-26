@@ -63,6 +63,30 @@
       </header>
 
       <main>
+        <section v-show="active_Page === 'intro'" class="page page-intro" id="intro-section">
+          <div class="intro-scene">
+            <canvas id="particle-canvas"></canvas>
+            <div class="intro-overlay">
+              <div class="river-scene">
+                <div class="river-water"></div>
+                <div class="river-reflection"></div>
+                <div class="boat">
+                  <div class="boat-body"></div>
+                  <div class="boat-sail"></div>
+                </div>
+                <div class="boat boat-reflection">
+                  <div class="boat-body"></div>
+                  <div class="boat-sail"></div>
+                </div>
+              </div>
+              <div class="intro-title" :class="{ visible: introTitleVisible }">
+                <h1>WaterBoat WorkStation</h1>
+                <p class="intro-subtitle">TOOLBOX_Lully · 个人工具站与智能体入口</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section v-show="active_Page === 'menu'" class="page page-menu">
           <div class="hero-grid">
             <div class="hero-panel">
@@ -234,6 +258,48 @@
             </div>
           </div>
         </section>
+
+        <section v-show="active_Page === 'projects'" class="page page-projects">
+          <div class="projects-header">
+            <div>
+              <p class="eyebrow">MY PROJECTS</p>
+              <h2>项目管理</h2>
+            </div>
+            <button class="add-project-btn" @click="showAddProject = !showAddProject">
+              <span>{{ showAddProject ? '−' : '+' }}</span>
+              {{ showAddProject ? '收起' : '新增项目' }}
+            </button>
+          </div>
+
+          <div class="add-project-form" v-show="showAddProject">
+            <input
+              v-model.trim="newProjectName"
+              type="text"
+              placeholder="输入项目名称..."
+              @keyup.enter="addProject"
+            />
+            <button class="submit-project-btn" @click="addProject" :disabled="!newProjectName">确认添加</button>
+          </div>
+
+          <div class="projects-grid" v-if="userProjects.length">
+            <div
+              v-for="(proj, index) in userProjects"
+              :key="proj.id"
+              class="project-card"
+            >
+              <button class="delete-project-btn" @click="deleteProject(index)" title="删除项目">×</button>
+              <div class="project-card-icon">
+                <span>{{ proj.name.charAt(0).toUpperCase() }}</span>
+              </div>
+              <p class="project-card-name">{{ proj.name }}</p>
+              <p class="project-card-date">{{ proj.date }}</p>
+            </div>
+          </div>
+
+          <div class="projects-empty" v-else>
+            <p>暂无项目，点击右上角 "+" 新增一个吧</p>
+          </div>
+        </section>
       </main>
 
       <footer class="site-footer">
@@ -277,12 +343,21 @@
         el: '#app',
         data() {
           return {
-            active_Page: 'menu',
+            active_Page: 'intro',
             activeTab: 'intro',
             menuOpen: false,
             settingsOpen: false,
             theme: localStorage.getItem('theme') || 'dark',
+            introTitleVisible: false,
+            introCycleTimer: null,
+            introParticles: [],
+            introAnimFrame: null,
+            introCanvas: null,
+            introCtx: null,
             searchText: '',
+            userProjects: JSON.parse(localStorage.getItem('userProjects') || '[]'),
+            newProjectName: '',
+            showAddProject: false,
             setTime: new Date('2026-03-04 00:00:00').getTime(),
             day: 0,
             hour: 0,
@@ -290,8 +365,10 @@
             second: 0,
             timer: null,
             navItems: [
+              { key: 'intro', label: 'INTRODUCTION', desc: '站点介绍与粒子动画', icon: '发现.svg' },
               { key: 'menu', label: 'MENU', desc: '首页与模块入口', icon: '菜单.svg' },
               { key: 'project', label: 'PART', desc: '项目与智能体介绍', icon: '分类.svg' },
+              { key: 'projects', label: 'PROJECTS', desc: '项目卡片管理', icon: '工具盒.png' },
               { key: 'blogs', label: 'HELPER', desc: '嵌入式 AI 助手', icon: '服务.svg' },
               { key: 'pictures', label: 'THANKS', desc: '友链与致谢', icon: '发现.svg' },
               { key: 'settings', label: 'SETTINGS', desc: '页面设置', icon: '工具.svg', isSettings: true }
@@ -379,6 +456,19 @@
             ]
           };
         },
+        watch: {
+          active_Page(val) {
+            if (val === 'intro') {
+              this.$nextTick(() => {
+                this.initIntroCanvas();
+                this.startIntroCycle();
+                this.animateIntroParticles();
+              });
+            } else {
+              this.stopIntroCycle();
+            }
+          }
+        },
         computed: {
           filteredCards() {
             const keyword = this.searchText.toLowerCase();
@@ -417,6 +507,109 @@
             this.theme = theme;
             localStorage.setItem('theme', theme);
             document.documentElement.setAttribute('data-theme', theme);
+          },
+          initIntroCanvas() {
+            this.introCanvas = document.getElementById('particle-canvas');
+            if (!this.introCanvas) return;
+            this.introCtx = this.introCanvas.getContext('2d');
+            this.resizeIntroCanvas();
+            window.addEventListener('resize', this.resizeIntroCanvas);
+          },
+          resizeIntroCanvas() {
+            if (!this.introCanvas) return;
+            this.introCanvas.width = this.introCanvas.offsetWidth;
+            this.introCanvas.height = this.introCanvas.offsetHeight;
+          },
+          spawnParticles() {
+            if (!this.introCanvas) return;
+            const w = this.introCanvas.width;
+            const h = this.introCanvas.height;
+            const cx = w / 2;
+            const cy = h * 0.42;
+            for (let i = 0; i < 120; i++) {
+              const angle = Math.random() * Math.PI * 2;
+              const speed = 1.5 + Math.random() * 4.5;
+              this.introParticles.push({
+                x: cx,
+                y: cy,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                life: 1,
+                decay: 0.004 + Math.random() * 0.008,
+                size: 1.5 + Math.random() * 3.5,
+                hue: 260 + Math.random() * 40
+              });
+            }
+          },
+          animateIntroParticles() {
+            if (!this.introCtx || !this.introCanvas) return;
+            const ctx = this.introCtx;
+            const w = this.introCanvas.width;
+            const h = this.introCanvas.height;
+            ctx.clearRect(0, 0, w, h);
+            for (let i = this.introParticles.length - 1; i >= 0; i--) {
+              const p = this.introParticles[i];
+              p.x += p.vx;
+              p.y += p.vy;
+              p.vy += 0.015;
+              p.vx *= 0.998;
+              p.life -= p.decay;
+              if (p.life <= 0) {
+                this.introParticles.splice(i, 1);
+                continue;
+              }
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+              ctx.fillStyle = `hsla(${p.hue}, 85%, 65%, ${p.life * 0.85})`;
+              ctx.shadowColor = `hsla(${p.hue}, 90%, 60%, ${p.life * 0.6})`;
+              ctx.shadowBlur = 12;
+              ctx.fill();
+            }
+            ctx.shadowBlur = 0;
+            this.introAnimFrame = requestAnimationFrame(this.animateIntroParticles);
+          },
+          startIntroCycle() {
+            const tick = () => {
+              this.introTitleVisible = true;
+              this.spawnParticles();
+              setTimeout(() => {
+                this.introTitleVisible = false;
+              }, 5000);
+            };
+            tick();
+            this.introCycleTimer = setInterval(tick, 10000);
+          },
+          stopIntroCycle() {
+            clearInterval(this.introCycleTimer);
+            this.introCycleTimer = null;
+            cancelAnimationFrame(this.introAnimFrame);
+            this.introParticles = [];
+            this.introTitleVisible = false;
+            if (this.introCtx && this.introCanvas) {
+              this.introCtx.clearRect(0, 0, this.introCanvas.width, this.introCanvas.height);
+            }
+          },
+          addProject() {
+            if (!this.newProjectName) return;
+            const now = new Date();
+            const dateStr = now.getFullYear() + '-' +
+              String(now.getMonth() + 1).padStart(2, '0') + '-' +
+              String(now.getDate()).padStart(2, '0');
+            this.userProjects.push({
+              id: Date.now(),
+              name: this.newProjectName,
+              date: dateStr
+            });
+            this.newProjectName = '';
+            this.showAddProject = false;
+            this.saveProjects();
+          },
+          deleteProject(index) {
+            this.userProjects.splice(index, 1);
+            this.saveProjects();
+          },
+          saveProjects() {
+            localStorage.setItem('userProjects', JSON.stringify(this.userProjects));
           }
         },
         mounted() {
@@ -424,9 +617,16 @@
           this.timer = setInterval(this.showtime, 1000);
           visitorCounter.fetchAndCount();
           document.documentElement.setAttribute('data-theme', this.theme);
+          this.$nextTick(() => {
+            this.initIntroCanvas();
+            this.startIntroCycle();
+            this.animateIntroParticles();
+          });
         },
         beforeDestroy() {
           clearInterval(this.timer);
+          this.stopIntroCycle();
+          window.removeEventListener('resize', this.resizeIntroCanvas);
         }
       });
     </script>
