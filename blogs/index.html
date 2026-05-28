@@ -405,7 +405,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0"></script>
     <script>
       new Vue({
         el: '#app',
@@ -733,12 +733,19 @@
             localStorage.setItem('userProjects', JSON.stringify(this.userProjects));
           },
           initSupabase() {
-            const url = localStorage.getItem('supabase_url');
-            const key = localStorage.getItem('supabase_key');
-            if (url && key && window.supabase) {
-              this.supabase = window.supabase.createClient(url, key);
-              this.supabaseReady = true;
-              this.loadSurveysFromSupabase();
+            const url = localStorage.getItem('supabase_url') || 'https://lzizinzjvwckecfjfxaw.supabase.co';
+            const key = localStorage.getItem('supabase_key') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6aXppbnpqdndja2VjZmpmeGF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MzU1NzksImV4cCI6MjA5NTUxMTU3OX0.mcqrLghGQTDYiqQVWZF2-mYGqLzB2lOHyGe1JbcOBLQ';
+            if (url && key && window.supabase && window.supabase.createClient) {
+              try {
+                this.supabase = window.supabase.createClient(url, key);
+                this.supabaseReady = true;
+                console.log('[Supabase] 连接成功:', url);
+                this.loadSurveysFromSupabase();
+              } catch (e) {
+                console.error('[Supabase] 初始化失败:', e);
+              }
+            } else {
+              console.warn('[Supabase] CDN 未加载或参数缺失');
             }
           },
           async loadSurveysFromSupabase() {
