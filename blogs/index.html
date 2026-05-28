@@ -286,13 +286,15 @@
               v-for="(proj, index) in userProjects"
               :key="proj.id"
               class="project-card"
+              @click="openProjectSurvey(proj)"
             >
-              <button class="delete-project-btn" @click="deleteProject(index)" title="删除项目">×</button>
+              <button class="delete-project-btn" @click.stop="deleteProject(index)" title="删除项目">×</button>
               <div class="project-card-icon">
                 <span>{{ proj.name.charAt(0).toUpperCase() }}</span>
               </div>
               <p class="project-card-name">{{ proj.name }}</p>
               <p class="project-card-date">{{ proj.date }}</p>
+              <span class="project-card-tag" v-if="proj.surveyId">问卷</span>
             </div>
           </div>
 
@@ -332,12 +334,78 @@
                 浅色主题
               </button>
             </div>
+            <p class="settings-label" style="margin-top: 24px;">SUPABASE 数据库</p>
+            <div class="theme-buttons">
+              <button class="theme-btn" @click="setupSupabase">
+                {{ supabaseReady ? '✓ 已连接' : '配置 Supabase' }}
+              </button>
+              <button class="theme-btn" v-if="supabaseReady" @click="refreshSurveys">
+                刷新问卷
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 问卷弹窗 -->
+      <div class="survey-overlay" :class="{ show: surveyOpen }" @click.self="surveyOpen = false">
+        <div class="survey-panel" v-if="currentSurvey">
+          <div class="survey-header">
+            <div>
+              <p class="eyebrow">{{ currentSurvey.category }}</p>
+              <h3>{{ currentSurvey.title }}</h3>
+            </div>
+            <button class="survey-close" @click="surveyOpen = false">✕</button>
+          </div>
+          <div class="survey-body">
+            <p class="survey-desc">{{ currentSurvey.description }}</p>
+            <div class="survey-questions">
+              <div v-for="(q, qi) in currentSurvey.questions" :key="q.id" class="survey-question">
+                <p class="survey-q-label">
+                  <span class="survey-q-num">{{ String(qi + 1).padStart(2, '0') }}</span>
+                  {{ q.text }}
+                  <span v-if="q.required" class="survey-q-required">*</span>
+                </p>
+                <div v-if="q.type === 'radio'" class="survey-options">
+                  <label v-for="opt in q.options" :key="opt" class="survey-option"
+                    :class="{ selected: surveyAnswers[q.id] === opt }">
+                    <input type="radio" :name="q.id" :value="opt" v-model="surveyAnswers[q.id]" />
+                    <span class="survey-radio"></span>
+                    {{ opt }}
+                  </label>
+                </div>
+                <div v-else-if="q.type === 'checkbox'" class="survey-options">
+                  <label v-for="opt in q.options" :key="opt" class="survey-option"
+                    :class="{ selected: (surveyAnswers[q.id] || []).includes(opt) }">
+                    <input type="checkbox" :value="opt" v-model="surveyAnswers[q.id]" />
+                    <span class="survey-checkbox"></span>
+                    {{ opt }}
+                  </label>
+                </div>
+                <textarea v-else-if="q.type === 'text'" v-model="surveyAnswers[q.id]"
+                  class="survey-textarea" placeholder="请输入你的回答..." rows="3"></textarea>
+                <div v-else-if="q.type === 'rating'" class="survey-rating">
+                  <button v-for="n in (q.max || 5)" :key="n" type="button"
+                    class="survey-star" :class="{ active: surveyAnswers[q.id] >= n }"
+                    @click="surveyAnswers[q.id] = n">
+                    ★
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="survey-footer">
+            <p class="survey-status" v-if="surveyStatus" :class="surveyStatusType">{{ surveyStatus }}</p>
+            <button class="survey-submit" @click="submitSurvey" :disabled="surveySubmitting">
+              {{ surveySubmitting ? '提交中...' : '确认提交' }}
+            </button>
           </div>
         </div>
       </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       new Vue({
         el: '#app',
@@ -358,6 +426,59 @@
             userProjects: JSON.parse(localStorage.getItem('userProjects') || '[]'),
             newProjectName: '',
             showAddProject: false,
+            // Supabase
+            supabase: null,
+            supabaseReady: false,
+            remoteSurveys: {},
+            // 问卷
+            surveyOpen: false,
+            currentSurvey: null,
+            surveyAnswers: {},
+            surveySubmitting: false,
+            surveyStatus: '',
+            surveyStatusType: '',
+            defaultSurveys: {
+              feedback: {
+                id: 'feedback',
+                title: '用户反馈问卷',
+                category: 'FEEDBACK',
+                description: '感谢你使用 TOOLBOX_Lully！请花 1 分钟填写这份问卷，帮助我们改进体验。',
+                questions: [
+                  {
+                    id: 'q1',
+                    text: '你是通过什么渠道了解到这个网站的？',
+                    type: 'radio',
+                    required: true,
+                    options: ['朋友推荐', '搜索引擎', '社交媒体', 'GitHub', '其他']
+                  },
+                  {
+                    id: 'q2',
+                    text: '你最常使用网站的哪些功能？',
+                    type: 'checkbox',
+                    options: ['智能体助手', '项目管理', '工具入口', 'PART 介绍页']
+                  },
+                  {
+                    id: 'q3',
+                    text: '你对网站的整体体验评分',
+                    type: 'rating',
+                    required: true,
+                    max: 5
+                  },
+                  {
+                    id: 'q4',
+                    text: '你希望网站增加什么功能？',
+                    type: 'text'
+                  },
+                  {
+                    id: 'q5',
+                    text: '你是否会推荐这个网站给朋友？',
+                    type: 'radio',
+                    required: true,
+                    options: ['一定会', '可能会', '不确定', '不太会']
+                  }
+                ]
+              }
+            },
             setTime: new Date('2026-03-04 00:00:00').getTime(),
             day: 0,
             hour: 0,
@@ -610,6 +731,112 @@
           },
           saveProjects() {
             localStorage.setItem('userProjects', JSON.stringify(this.userProjects));
+          },
+          initSupabase() {
+            const url = localStorage.getItem('supabase_url');
+            const key = localStorage.getItem('supabase_key');
+            if (url && key && window.supabase) {
+              this.supabase = window.supabase.createClient(url, key);
+              this.supabaseReady = true;
+              this.loadSurveysFromSupabase();
+            }
+          },
+          async loadSurveysFromSupabase() {
+            if (!this.supabase) return;
+            try {
+              const { data, error } = await this.supabase
+                .from('surveys')
+                .select('*');
+              if (error) throw error;
+              if (data && data.length) {
+                data.forEach(s => {
+                  this.$set(this.remoteSurveys, s.id, {
+                    id: s.id,
+                    title: s.title,
+                    category: s.category,
+                    description: s.description,
+                    questions: s.questions
+                  });
+                });
+              }
+            } catch (e) {
+              console.warn('加载远程问卷失败:', e.message);
+            }
+          },
+          openProjectSurvey(proj) {
+            const surveyId = proj.surveyId || 'feedback';
+            const survey = this.remoteSurveys[surveyId] || this.defaultSurveys[surveyId];
+            if (!survey) return;
+            this.currentSurvey = survey;
+            this.surveyAnswers = {};
+            this.surveyStatus = '';
+            this.surveyStatusType = '';
+            survey.questions.forEach(q => {
+              if (q.type === 'checkbox') {
+                this.$set(this.surveyAnswers, q.id, []);
+              } else if (q.type === 'rating') {
+                this.$set(this.surveyAnswers, q.id, 0);
+              } else {
+                this.$set(this.surveyAnswers, q.id, '');
+              }
+            });
+            this.surveyOpen = true;
+          },
+          async submitSurvey() {
+            if (!this.currentSurvey) return;
+            const required = this.currentSurvey.questions.filter(q => q.required);
+            for (const q of required) {
+              const ans = this.surveyAnswers[q.id];
+              if (!ans || (Array.isArray(ans) && ans.length === 0) || ans === 0) {
+                this.surveyStatus = '请完成所有必填题目';
+                this.surveyStatusType = 'error';
+                return;
+              }
+            }
+            this.surveySubmitting = true;
+            this.surveyStatus = '';
+            const payload = {
+              survey_id: this.currentSurvey.id,
+              answers: this.surveyAnswers,
+              submitted_at: new Date().toISOString()
+            };
+            if (this.supabaseReady) {
+              try {
+                const { error } = await this.supabase
+                  .from('survey_responses')
+                  .insert(payload);
+                if (error) throw error;
+                this.surveyStatus = '提交成功，感谢你的反馈！';
+                this.surveyStatusType = 'success';
+                setTimeout(() => { this.surveyOpen = false; }, 1500);
+              } catch (e) {
+                this.surveyStatus = '提交失败: ' + e.message;
+                this.surveyStatusType = 'error';
+              }
+            } else {
+              const all = JSON.parse(localStorage.getItem('survey_responses') || '[]');
+              all.push(payload);
+              localStorage.setItem('survey_responses', JSON.stringify(all));
+              this.surveyStatus = '提交成功（本地存储，配置 Supabase 后可同步到云端）';
+              this.surveyStatusType = 'success';
+              setTimeout(() => { this.surveyOpen = false; }, 1500);
+            }
+            this.surveySubmitting = false;
+          },
+          setupSupabase() {
+            const url = prompt('请输入 Supabase Project URL:');
+            const key = prompt('请输入 Supabase Anon Key:');
+            if (url && key) {
+              localStorage.setItem('supabase_url', url);
+              localStorage.setItem('supabase_key', key);
+              this.initSupabase();
+              alert(this.supabaseReady ? 'Supabase 配置成功！' : '配置失败，请检查参数');
+            }
+          },
+          refreshSurveys() {
+            this.remoteSurveys = {};
+            this.loadSurveysFromSupabase();
+            alert('问卷数据已刷新');
           }
         },
         mounted() {
@@ -617,6 +844,17 @@
           this.timer = setInterval(this.showtime, 1000);
           visitorCounter.fetchAndCount();
           document.documentElement.setAttribute('data-theme', this.theme);
+          this.initSupabase();
+          // 首次加载：如果没有问卷项目，自动创建默认问卷
+          if (!this.userProjects.some(p => p.surveyId)) {
+            this.userProjects.push({
+              id: Date.now(),
+              name: '用户反馈问卷',
+              date: '2026-05-28',
+              surveyId: 'feedback'
+            });
+            this.saveProjects();
+          }
           this.$nextTick(() => {
             this.initIntroCanvas();
             this.startIntroCycle();
