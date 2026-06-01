@@ -70,7 +70,10 @@
   <body>
     <div id="agent-scale-host"></div>
     <div id="agent-loading" class="agent-loading">Loading agent...</div>
+    <script src="https://agi-dev-platform-web.cdn.bcebos.com/ai_apaas/embed/output/embedFullSDK.js?responseExpires=0&t=1779503604078"></script>
     <script>
+      const APP_ID = '__BAIDU_AGENT_APP_ID__';
+      const CODE = '__BAIDU_AGENT_CODE__';
       const host = document.getElementById('agent-scale-host');
       const loadingEl = document.getElementById('agent-loading');
 
@@ -89,44 +92,19 @@
       window.addEventListener('wheel', (event) => { event.preventDefault(); }, { passive: false, capture: true });
       window.addEventListener('touchmove', (event) => { event.preventDefault(); }, { passive: false, capture: true });
 
-      // 从后端获取智能体配置
-      async function initAgent() {
-        try {
-          const resp = await fetch('/api/agent-config');
-          if (!resp.ok) {
-            const err = await resp.json().catch(() => ({}));
-            throw new Error(err.error || `HTTP ${resp.status}`);
-          }
-
-          const config = await resp.json();
-
-          // 动态加载 SDK
-          await new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = config.sdkUrl;
-            script.onload = resolve;
-            script.onerror = () => reject(new Error('Failed to load SDK'));
-            document.head.appendChild(script);
-          });
-
-          // 移除加载提示
-          loadingEl.remove();
-
-          // 初始化智能体
-          new EmbedWebSDK({
-            appId: config.appId,
-            code: config.code,
-            container: host,
-            renderConfig: { width: '100%', height: '100%' }
-          });
-        } catch (e) {
-          console.error('[Agent] 初始化失败:', e);
-          loadingEl.className = 'agent-error';
-          loadingEl.innerHTML = '<p>智能体加载失败</p><p style="font-size:12px;opacity:0.6;margin-top:8px;">' + e.message + '</p>';
-        }
+      try {
+        loadingEl.remove();
+        new EmbedWebSDK({
+          appId: APP_ID,
+          code: CODE,
+          container: host,
+          renderConfig: { width: '100%', height: '100%' }
+        });
+      } catch (e) {
+        console.error('[Agent] 初始化失败:', e);
+        loadingEl.className = 'agent-error';
+        loadingEl.innerHTML = '<p>智能体加载失败</p><p style="font-size:12px;opacity:0.6;margin-top:8px;">' + e.message + '</p>';
       }
-
-      initAgent();
     </script>
   </body>
 </html>
