@@ -42,15 +42,38 @@
       #agent-scale-host > * {
         max-width: none;
       }
+
+      .agent-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        color: rgba(255, 165, 0, 0.6);
+        font-family: monospace;
+        font-size: 14px;
+      }
+
+      .agent-error {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        color: rgba(255, 100, 100, 0.8);
+        font-family: monospace;
+        font-size: 14px;
+        text-align: center;
+        padding: 20px;
+      }
     </style>
   </head>
   <body>
     <div id="agent-scale-host"></div>
-    <script src="https://agi-dev-platform-web.cdn.bcebos.com/ai_apaas/embed/output/embedFullSDK.js?responseExpires=0&t=1779503604078"></script>
+    <div id="agent-loading" class="agent-loading">Loading agent...</div>
     <script>
-      const encodeKey = 'ZW1iZWRCSFBncHNtN29jeEVrSHlpMmpMcA==';
-      const realCode = atob(encodeKey);
       const host = document.getElementById('agent-scale-host');
+      const loadingEl = document.getElementById('agent-loading');
+
       const moveIntoHost = (node) => {
         if (node.nodeType === Node.ELEMENT_NODE && node !== host && node.tagName !== 'SCRIPT') {
           host.appendChild(node);
@@ -63,28 +86,47 @@
         });
       }).observe(document.body, { childList: true });
 
-      window.addEventListener(
-        'wheel',
-        (event) => {
-          event.preventDefault();
-        },
-        { passive: false, capture: true }
-      );
+      window.addEventListener('wheel', (event) => { event.preventDefault(); }, { passive: false, capture: true });
+      window.addEventListener('touchmove', (event) => { event.preventDefault(); }, { passive: false, capture: true });
 
-      window.addEventListener(
-        'touchmove',
-        (event) => {
-          event.preventDefault();
-        },
-        { passive: false, capture: true }
-      );
+      // 从后端获取智能体配置
+      async function initAgent() {
+        try {
+          const resp = await fetch('/api/agent-config');
+          if (!resp.ok) {
+            const err = await resp.json().catch(() => ({}));
+            throw new Error(err.error || `HTTP ${resp.status}`);
+          }
 
-      new EmbedWebSDK({
-        appId: 'c22d3b92-c974-4c53-9a73-a51c69c8ea83',
-        code: realCode,
-        container: host,
-        renderConfig: { width: '100%', height: '100%' }
-      });
+          const config = await resp.json();
+
+          // 动态加载 SDK
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = config.sdkUrl;
+            script.onload = resolve;
+            script.onerror = () => reject(new Error('Failed to load SDK'));
+            document.head.appendChild(script);
+          });
+
+          // 移除加载提示
+          loadingEl.remove();
+
+          // 初始化智能体
+          new EmbedWebSDK({
+            appId: config.appId,
+            code: config.code,
+            container: host,
+            renderConfig: { width: '100%', height: '100%' }
+          });
+        } catch (e) {
+          console.error('[Agent] 初始化失败:', e);
+          loadingEl.className = 'agent-error';
+          loadingEl.innerHTML = '<p>智能体加载失败</p><p style="font-size:12px;opacity:0.6;margin-top:8px;">' + e.message + '</p>';
+        }
+      }
+
+      initAgent();
     </script>
   </body>
 </html>

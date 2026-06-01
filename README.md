@@ -118,7 +118,18 @@ Vue 中主要状态包括：
 - 当前主题保留原有深色背景、橙色强调线和已有图片/SVG 标识，在此基础上重构为更现代、更极客化的视觉风格。
 - 个性字体通过 Google Fonts 引入，网络不可用时会回退到系统字体。
 
+## 部署
+
+由于项目是静态站点，可以部署到任意静态托管平台，例如：
+
+- GitHub Pages
+- Cloudflare Pages
+- Vercel
+- Netlify
+- Nginx 静态目录
+
+部署时将 `blogs` 目录作为站点根目录，或将 `blogs/index.html` 所在目录配置为静态资源目录即可。
 
 ## 在线访问
 
-👉 [点击访问](https://waterboat-ll.github.io/lightligh-/blogs/)
+👉 https://github.com/WaterBoat-LL/lightligh-

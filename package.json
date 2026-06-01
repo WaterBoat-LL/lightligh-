@@ -1,0 +1,22 @@
+{
+  "name": "lightligh-",
+  "version": "1.0.0",
+  "description": "TOOLBOX_Lully 是一个静态个人工具站/博客首页项目，当前主要包含现代化首页导航、工具模块卡片、项目介绍页签、致谢友链页面，以及一个通过 iframe 嵌入的智能体助手页面。",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node api/_dev-server.js",
+    "start": "node api/_dev-server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WaterBoat-LL/lightligh-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/WaterBoat-LL/lightligh-/issues"
+  },
+  "homepage": "https://github.com/WaterBoat-LL/lightligh-#readme"
+}
