@@ -146,5 +146,5 @@ server.listen(PORT, () => {
   console.log(`\n  TOOLBOX_Lully dev server running at:\n`);
   console.log(`  > Local:   http://localhost:${PORT}`);
   console.log(`  > API:     http://localhost:${PORT}/api/chat`);
-  console.log(`\n  Make sure .env file has LLM_API_KEY set.\n`);
+  console.log(`\n  Make sure .env file has APPBUILDER_API_KEY set.\n`);
 });
