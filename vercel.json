@@ -3,7 +3,6 @@
   "public": true,
   "rewrites": [
     { "source": "/", "destination": "/blogs/index.html" },
-    { "source": "/view", "destination": "/blogs/view.html" },
     { "source": "/((?!api/).*)", "destination": "/blogs/$1" }
   ],
   "headers": [
