@@ -64,25 +64,29 @@
 
       <main>
         <section v-show="active_Page === 'intro'" class="page page-intro" id="intro-section">
-          <div class="intro-scene">
-            <canvas id="particle-canvas"></canvas>
-            <div class="intro-overlay">
-              <div class="river-scene">
-                <div class="river-water"></div>
-                <div class="river-reflection"></div>
-                <div class="boat">
-                  <div class="boat-body"></div>
-                  <div class="boat-sail"></div>
-                </div>
-                <div class="boat boat-reflection">
-                  <div class="boat-body"></div>
-                  <div class="boat-sail"></div>
-                </div>
+          <div class="terminal-board">
+            <div class="terminal-header">
+              <span class="term-dot dot-red"></span>
+              <span class="term-dot dot-yellow"></span>
+              <span class="term-dot dot-green"></span>
+              <span class="term-title">bulletin@toolbox_lully — bash — 80×24</span>
+            </div>
+            <div class="terminal-body">
+              <p class="term-line"><span class="term-prompt">waterboat@lully:~$</span> cat /var/bulletin/announcement.txt</p>
+              <div class="bulletin-box">
+                <h1 class="bulletin-title">📢 关于网站部署域名更改的告知</h1>
+                <p class="bulletin-meta">2026-06-24 · 重要通知</p>
+                <hr class="bulletin-divider" />
+                <p class="bulletin-text">因为静态网页无法接入 API，目前已经将网站部署至：</p>
+                <p class="bulletin-url-line">
+                  <span class="term-prompt">$</span>
+                  <a href="https://waterboat-c5w.pages.dev/blogs/" target="_blank" rel="noopener" class="bulletin-link">
+                    https://waterboat-c5w.pages.dev/blogs/
+                  </a>
+                </p>
+                <p class="bulletin-text">希望访客与老师访问此网站下的 <strong>HELPER</strong> 进行使用。</p>
               </div>
-              <div class="intro-title" :class="{ visible: introTitleVisible }">
-                <h1>WaterBoat WorkStation</h1>
-                <p class="intro-subtitle">TOOLBOX_Lully · 个人工具站与智能体入口</p>
-              </div>
+              <p class="term-line"><span class="term-prompt">waterboat@lully:~$</span> <span class="term-cursor">█</span></p>
             </div>
           </div>
         </section>
@@ -508,12 +512,6 @@
             menuOpen: false,
             settingsOpen: false,
             theme: localStorage.getItem('theme') || 'dark',
-            introTitleVisible: false,
-            introCycleTimer: null,
-            introParticles: [],
-            introAnimFrame: null,
-            introCanvas: null,
-            introCtx: null,
             searchText: '',
             userProjects: JSON.parse(localStorage.getItem('userProjects') || '[]'),
             // 聊天状态
@@ -677,19 +675,6 @@
             ]
           };
         },
-        watch: {
-          active_Page(val) {
-            if (val === 'intro') {
-              this.$nextTick(() => {
-                this.initIntroCanvas();
-                this.startIntroCycle();
-                this.animateIntroParticles();
-              });
-            } else {
-              this.stopIntroCycle();
-            }
-          }
-        },
         computed: {
           filteredCards() {
             const keyword = this.searchText.toLowerCase();
@@ -732,87 +717,6 @@
             this.theme = theme;
             localStorage.setItem('theme', theme);
             document.documentElement.setAttribute('data-theme', theme);
-          },
-          initIntroCanvas() {
-            this.introCanvas = document.getElementById('particle-canvas');
-            if (!this.introCanvas) return;
-            this.introCtx = this.introCanvas.getContext('2d');
-            this.resizeIntroCanvas();
-            window.addEventListener('resize', this.resizeIntroCanvas);
-          },
-          resizeIntroCanvas() {
-            if (!this.introCanvas) return;
-            this.introCanvas.width = this.introCanvas.offsetWidth;
-            this.introCanvas.height = this.introCanvas.offsetHeight;
-          },
-          spawnParticles() {
-            if (!this.introCanvas) return;
-            const w = this.introCanvas.width;
-            const h = this.introCanvas.height;
-            const cx = w / 2;
-            const cy = h * 0.42;
-            for (let i = 0; i < 120; i++) {
-              const angle = Math.random() * Math.PI * 2;
-              const speed = 1.5 + Math.random() * 4.5;
-              this.introParticles.push({
-                x: cx,
-                y: cy,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                life: 1,
-                decay: 0.004 + Math.random() * 0.008,
-                size: 1.5 + Math.random() * 3.5,
-                hue: 260 + Math.random() * 40
-              });
-            }
-          },
-          animateIntroParticles() {
-            if (!this.introCtx || !this.introCanvas) return;
-            const ctx = this.introCtx;
-            const w = this.introCanvas.width;
-            const h = this.introCanvas.height;
-            ctx.clearRect(0, 0, w, h);
-            for (let i = this.introParticles.length - 1; i >= 0; i--) {
-              const p = this.introParticles[i];
-              p.x += p.vx;
-              p.y += p.vy;
-              p.vy += 0.015;
-              p.vx *= 0.998;
-              p.life -= p.decay;
-              if (p.life <= 0) {
-                this.introParticles.splice(i, 1);
-                continue;
-              }
-              ctx.beginPath();
-              ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-              ctx.fillStyle = `hsla(${p.hue}, 85%, 65%, ${p.life * 0.85})`;
-              ctx.shadowColor = `hsla(${p.hue}, 90%, 60%, ${p.life * 0.6})`;
-              ctx.shadowBlur = 12;
-              ctx.fill();
-            }
-            ctx.shadowBlur = 0;
-            this.introAnimFrame = requestAnimationFrame(this.animateIntroParticles);
-          },
-          startIntroCycle() {
-            const tick = () => {
-              this.introTitleVisible = true;
-              this.spawnParticles();
-              setTimeout(() => {
-                this.introTitleVisible = false;
-              }, 5000);
-            };
-            tick();
-            this.introCycleTimer = setInterval(tick, 10000);
-          },
-          stopIntroCycle() {
-            clearInterval(this.introCycleTimer);
-            this.introCycleTimer = null;
-            cancelAnimationFrame(this.introAnimFrame);
-            this.introParticles = [];
-            this.introTitleVisible = false;
-            if (this.introCtx && this.introCanvas) {
-              this.introCtx.clearRect(0, 0, this.introCanvas.width, this.introCanvas.height);
-            }
           },
           addProject() {
             if (!this.newProjectName) return;
@@ -1226,16 +1130,11 @@
             });
             this.saveProjects();
           }
-          this.$nextTick(() => {
-            this.initIntroCanvas();
-            this.startIntroCycle();
-            this.animateIntroParticles();
-          });
+          // intro 公告栏已改为静态命令行风格，无需动画初始化
         },
         beforeDestroy() {
           clearInterval(this.timer);
-          this.stopIntroCycle();
-          window.removeEventListener('resize', this.resizeIntroCanvas);
+          // intro 公告栏已改为静态命令行风格
         }
       });
     </script>
