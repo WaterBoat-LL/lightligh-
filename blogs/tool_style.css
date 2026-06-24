@@ -1145,14 +1145,6 @@ main {
     grid-template-columns: 1fr;
   }
 
-  .intro-scene {
-    min-height: calc(100vh - 60px);
-  }
-
-  .intro-overlay {
-    min-height: calc(100vh - 60px);
-  }
-
   .feature-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1286,36 +1278,16 @@ main {
     margin-bottom: 6px;
   }
 
-  .page-intro {
-    margin-left: -12px;
-    margin-right: -12px;
-    width: calc(100% + 24px);
+  .terminal-board {
+    width: 94vw;
   }
 
-  .intro-scene {
-    min-height: calc(100vh - 50px);
-  }
-
-  .intro-overlay {
-    min-height: calc(100vh - 50px);
-  }
-
-  .boat-body {
-    width: 60px;
-    height: 16px;
-  }
-
-  .boat-sail {
-    height: 38px;
-  }
-
-  .boat-sail::before {
-    border-left-width: 22px;
-    border-bottom-width: 28px;
+  .bulletin-box {
+    padding: 14px 16px;
   }
 }
 
-/* ===== Introduction 粒子主页 ===== */
+/* ===== 命令行公告栏 ===== */
 .page-intro {
   position: relative;
   width: 100%;
@@ -1325,192 +1297,133 @@ main {
   margin-left: calc(-1 * clamp(16px, 4vw, 54px));
   margin-right: calc(-1 * clamp(16px, 4vw, 54px));
   width: calc(100% + 2 * clamp(16px, 4vw, 54px));
-}
-
-.intro-scene {
-  position: relative;
-  width: 100%;
-  min-height: calc(100vh - 60px);
-  overflow: hidden;
-}
-
-#particle-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.intro-overlay {
-  position: relative;
-  width: 100%;
-  min-height: calc(100vh - 60px);
-  z-index: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(ellipse at 50% 30%, rgba(100, 60, 180, 0.15) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 80%, rgba(20, 40, 80, 0.3) 0%, transparent 50%),
-    linear-gradient(180deg, #060b1a 0%, #0c1530 40%, #1a2550 60%, #0a1020 100%);
+  background: linear-gradient(180deg, #0a0a0a 0%, #0d1117 40%, #161b22 100%);
 }
 
-/* 河流场景 */
-.river-scene {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 48%;
+.terminal-board {
+  width: min(780px, 92vw);
+  border: 1px solid #30363d;
+  border-radius: 8px;
   overflow: hidden;
+  box-shadow:
+    0 0 40px rgba(0, 200, 100, 0.06),
+    0 8px 32px rgba(0, 0, 0, 0.5);
+  background: #0d1117;
 }
 
-.river-water {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 50%;
-  background: linear-gradient(180deg,
-    rgba(10, 20, 50, 0) 0%,
-    rgba(15, 30, 70, 0.4) 20%,
-    rgba(20, 40, 90, 0.6) 50%,
-    rgba(30, 50, 100, 0.5) 80%,
-    rgba(25, 45, 85, 0.3) 100%);
-  animation: waterFlow 8s ease-in-out infinite;
+.terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #161b22;
+  border-bottom: 1px solid #21262d;
 }
 
-@keyframes waterFlow {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(-8px); }
+.term-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
 }
 
-.river-reflection {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 50%;
-  background: linear-gradient(180deg,
-    rgba(20, 40, 90, 0.3) 0%,
-    rgba(15, 30, 70, 0.2) 30%,
-    rgba(10, 20, 50, 0.15) 60%,
-    rgba(8, 15, 40, 0.1) 100%);
-  transform: scaleY(-1);
-  opacity: 0.6;
-  filter: blur(2px);
+.dot-red   { background: #ff5f56; }
+.dot-yellow { background: #ffbd2e; }
+.dot-green  { background: #27c93f; }
+
+.term-title {
+  margin-left: 12px;
+  color: #8b949e;
+  font-family: "SF Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+  font-size: 12px;
 }
 
-/* 小舟 */
-.boat {
-  position: absolute;
-  top: 12%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
-  animation: boatFloat 6s ease-in-out infinite;
+.terminal-body {
+  padding: 20px 24px 24px;
+  font-family: "SF Mono", "Fira Code", "Cascadia Code", "Consolas", "Courier New", monospace;
+  color: #c9d1d9;
+  line-height: 1.7;
 }
 
-@keyframes boatFloat {
-  0%, 100% { transform: translateX(-50%) translateY(0) rotate(-1deg); }
-  50% { transform: translateX(-50%) translateY(-6px) rotate(1deg); }
+.term-line {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #8b949e;
 }
 
-.boat-body {
-  width: 80px;
-  height: 20px;
-  background: linear-gradient(180deg, #8B6914 0%, #6B4F10 100%);
-  border-radius: 0 0 40px 40px;
-  position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-.boat-body::before {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: -5px;
-  right: -5px;
-  height: 8px;
-  background: linear-gradient(180deg, #5C4210 0%, #3D2B08 100%);
-  border-radius: 0 0 50px 50px;
-}
-
-.boat-sail {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 50px;
-  background: linear-gradient(180deg, #f0e6d0 0%, #d4c4a0 100%);
-}
-
-.boat-sail::before {
-  content: '';
-  position: absolute;
-  top: 5px;
-  left: 2px;
-  width: 0;
-  height: 0;
-  border-left: 28px solid rgba(240, 230, 210, 0.85);
-  border-top: 8px solid transparent;
-  border-bottom: 35px solid transparent;
-  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
-}
-
-.boat-reflection {
-  top: auto;
-  bottom: 28%;
-  opacity: 0.25;
-  filter: blur(3px) scaleY(-1);
-  animation: boatFloatReflect 6s ease-in-out infinite;
-}
-
-@keyframes boatFloatReflect {
-  0%, 100% { transform: translateX(-50%) translateY(0) rotate(1deg); }
-  50% { transform: translateX(-50%) translateY(4px) rotate(-1deg); }
-}
-
-/* 网站标题 */
-.intro-title {
-  position: relative;
-  z-index: 5;
-  text-align: center;
-  opacity: 0;
-  transform: translateY(20px) scale(0.95);
-  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-  pointer-events: none;
-}
-
-.intro-title.visible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-.intro-title h1 {
-  font-family: var(--display-font);
-  font-size: clamp(36px, 7vw, 80px);
-  color: #ffffff;
-  letter-spacing: 0.04em;
-  text-shadow:
-    0 0 40px rgba(164, 108, 244, 0.6),
-    0 0 80px rgba(164, 108, 244, 0.3),
-    0 0 120px rgba(100, 60, 180, 0.2);
-  margin: 0;
-  line-height: 1.1;
-}
-
-.intro-subtitle {
-  margin-top: 16px;
-  color: rgba(200, 210, 240, 0.7);
-  font-size: clamp(14px, 2vw, 18px);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+.term-prompt {
+  color: #3fb950;
+  margin-right: 8px;
   font-weight: 600;
+}
+
+.term-cursor {
+  color: #3fb950;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* 公告框 */
+.bulletin-box {
+  margin: 8px 0 20px;
+  padding: 20px 24px;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  background: rgba(22, 27, 34, 0.6);
+}
+
+.bulletin-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #f0f6fc;
+  font-family: var(--display-font), "SF Mono", "Consolas", monospace;
+  letter-spacing: 0.02em;
+}
+
+.bulletin-meta {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: #58a6ff;
+  font-family: inherit;
+}
+
+.bulletin-divider {
+  border: none;
+  border-top: 1px dashed #30363d;
+  margin: 14px 0;
+}
+
+.bulletin-text {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: #c9d1d9;
+  line-height: 1.8;
+}
+
+.bulletin-url-line {
+  margin: 8px 0 12px;
+  font-size: 14px;
+  background: rgba(63, 185, 80, 0.06);
+  border-left: 3px solid #3fb950;
+  padding: 10px 14px;
+  border-radius: 0 4px 4px 0;
+}
+
+.bulletin-link {
+  color: #58a6ff;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.bulletin-link:hover {
+  text-decoration: underline;
+  color: #79c0ff;
 }
 
 /* ===== Projects 项目管理页 ===== */
