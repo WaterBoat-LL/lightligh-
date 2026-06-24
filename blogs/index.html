@@ -10,55 +10,33 @@
     <script src="index.js"></script>
   </head>
   <body>
-    <div id="app" class="app-shell" @click="menuOpen = false">
+    <div id="app" class="app-shell">
       <header class="site-header">
-        <a class="brand" href="#" @click.prevent.stop="active_Page = 'menu'; menuOpen = false" aria-label="TOOLBOX_Lully">
-          <span class="brand-mark">
-            <img src="个人认证.svg" alt="" />
-          </span>
-          <span class="brand-copy">
-            <strong>TOOLBOX</strong>
-            <small>Lully Lab</small>
-          </span>
-        </a>
-
-        <div class="command-bar">
-          <label class="search-box" aria-label="搜索">
-            <span>⌘</span>
-            <input v-model.trim="searchText" type="text" placeholder="search toolbox..." />
-          </label>
-
-          <div class="menu-hub" @click.stop>
-            <button
-              type="button"
-              class="menu-trigger"
-              :class="{ active: menuOpen }"
-              :aria-expanded="String(menuOpen)"
-              aria-controls="site-menu"
-              aria-label="打开导航菜单"
-              @click="menuOpen = !menuOpen"
-            >
-              <span></span>
-              <span></span>
-              <span></span>
-            </button>
-            <nav id="site-menu" class="nav-dropdown" :class="{ open: menuOpen }" aria-label="主导航">
-              <button
-                v-for="item in navItems"
-                :key="item.key"
-                type="button"
-                class="nav-item"
-                :class="{ active: active_Page === item.key }"
-                @click="handleNavClick(item)"
-              >
-                <span class="nav-icon"><img :src="item.icon" alt="" /></span>
-                <span>
-                  <strong>{{ item.label }}</strong>
-                  <small>{{ item.desc }}</small>
-                </span>
-              </button>
-            </nav>
+        <div class="header-left">
+          <div class="header-avatar-wrap">
+            <div class="header-avatar">
+              <img src="CANTEST.png" alt="用户头像" />
+            </div>
+            <div class="avatar-dropdown">
+              <button class="avatar-menu-item">Sign In</button>
+            </div>
           </div>
+          <span class="header-logo">WaterBoat</span>
+        </div>
+        <nav class="header-nav">
+          <button
+            v-for="item in navItems"
+            :key="item.key"
+            type="button"
+            class="header-nav-item"
+            :class="{ active: active_Page === item.key }"
+            @click="handleNavClick(item)"
+          >
+            {{ item.label }}
+          </button>
+        </nav>
+        <div class="header-search">
+          <input v-model.trim="searchText" type="text" placeholder="搜索..." />
         </div>
       </header>
 
@@ -241,24 +219,10 @@
               </div>
             </aside>
             <div class="chat-main">
-              <!-- 数字人 -->
-              <div class="digital-human" :class="{ speaking: chatStreaming }">
-                <div class="dh-head">
-                  <div class="dh-face">
-                    <div class="dh-eye left"></div>
-                    <div class="dh-eye right"></div>
-                    <div class="dh-mouth"></div>
-                  </div>
-                </div>
-                <div class="dh-body"></div>
-                <div class="dh-ring ring-1"></div>
-                <div class="dh-ring ring-2"></div>
-                <div class="dh-ring ring-3"></div>
-                <div class="dh-particles">
-                  <span v-for="n in 8" :key="n" class="dh-particle"></span>
-                </div>
+              <div class="chat-mascot">
+                <img src="插入svg.svg" alt="" />
               </div>
-              <div class="chat-messages" ref="chatMessages">
+<div class="chat-messages" ref="chatMessages">
                 <div v-if="!chatCurrentMessages.length && !chatStreaming" class="chat-welcome">
                   <p class="eyebrow">AI HELPER</p>
                   <h2>智能体助手</h2>
@@ -509,7 +473,6 @@
           return {
             active_Page: 'intro',
             activeTab: 'intro',
-            menuOpen: false,
             settingsOpen: false,
             theme: localStorage.getItem('theme') || 'dark',
             searchText: '',
@@ -707,10 +670,8 @@
           handleNavClick(item) {
             if (item.isSettings) {
               this.settingsOpen = true;
-              this.menuOpen = false;
             } else {
               this.active_Page = item.key;
-              this.menuOpen = false;
             }
           },
           setTheme(theme) {
