@@ -14,11 +14,27 @@
       <header class="site-header">
         <div class="header-left">
           <div class="header-avatar-wrap">
-            <div class="header-avatar">
+            <div class="header-avatar" v-if="user" :style="{ background: userAvatarColor }">
+              <span class="header-avatar-initial">{{ userInitial }}</span>
+            </div>
+            <div class="header-avatar" v-else>
               <img src="CANTEST.png" alt="用户头像" />
             </div>
             <div class="avatar-dropdown">
-              <button class="avatar-menu-item">Sign In</button>
+              <template v-if="user">
+                <div class="avatar-dropdown-info">
+                  <div class="avatar-dropdown-avatar" :style="{ background: userAvatarColor }">{{ userInitial }}</div>
+                  <div>
+                    <p class="avatar-dropdown-name">{{ user.display_name }}</p>
+                    <p class="avatar-dropdown-email">已登录</p>
+                  </div>
+                </div>
+                <button class="avatar-menu-item" @click="logout">登出</button>
+              </template>
+              <template v-else>
+                <button class="avatar-menu-item" @click="showAuthModal('login')">Sign In</button>
+                <button class="avatar-menu-item" @click="showAuthModal('register')">Register</button>
+              </template>
             </div>
           </div>
           <span class="header-logo">WaterBoat</span>
@@ -55,7 +71,7 @@
                 <h1 class="bulletin-title">📢 关于网站部署域名更改的告知</h1>
                 <p class="bulletin-meta">2026-06-24 · 重要通知</p>
                 <hr class="bulletin-divider" />
-                <p class="bulletin-text">因为网页的技术性调整与结构改善，先将进入的方式改为:</p>
+                <p class="bulletin-text">因为静态网页无法接入 API，目前已经将网站部署至：</p>
                 <p class="bulletin-url-line">
                   <span class="term-prompt">$</span>
                   <a href="https://waterboat-c5w.pages.dev/blogs/" target="_blank" rel="noopener" class="bulletin-link">
@@ -369,6 +385,54 @@
         <span>All Rights Reserved</span>
       </footer>
 
+      <!-- 登录弹窗 -->
+      <div class="auth-overlay" :class="{ show: authModal === 'login' }" @click.self="authModal = null">
+        <div class="auth-panel">
+          <div class="auth-header">
+            <h3>Sign In</h3>
+            <button class="auth-close" @click="authModal = null">✕</button>
+          </div>
+          <div class="auth-body">
+            <div class="auth-error" v-if="authError">{{ authError }}</div>
+            <label class="auth-label">用户名</label>
+            <input v-model.trim="loginUsername" type="text" class="auth-input" placeholder="输入用户名" @keyup.enter="login" />
+            <label class="auth-label">密码</label>
+            <input v-model="loginPassword" type="password" class="auth-input" placeholder="输入密码" @keyup.enter="login" />
+            <button class="auth-submit" @click="login" :disabled="authLoading">
+              {{ authLoading ? '登录中...' : '登录' }}
+            </button>
+            <p class="auth-switch">
+              没有账号？<span @click="authModal = 'register'; clearAuthError()">去注册</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 注册弹窗 -->
+      <div class="auth-overlay" :class="{ show: authModal === 'register' }" @click.self="authModal = null">
+        <div class="auth-panel">
+          <div class="auth-header">
+            <h3>Register</h3>
+            <button class="auth-close" @click="authModal = null">✕</button>
+          </div>
+          <div class="auth-body">
+            <div class="auth-error" v-if="authError">{{ authError }}</div>
+            <label class="auth-label">用户名</label>
+            <input v-model.trim="registerUsername" type="text" class="auth-input" placeholder="你的用户名" />
+            <label class="auth-label">密码</label>
+            <input v-model="registerPassword" type="password" class="auth-input" placeholder="至少 6 位" />
+            <label class="auth-label">确认密码</label>
+            <input v-model="registerConfirmPassword" type="password" class="auth-input" placeholder="再次输入密码" @keyup.enter="register" />
+            <button class="auth-submit" @click="register" :disabled="authLoading">
+              {{ authLoading ? '注册中...' : '注册' }}
+            </button>
+            <p class="auth-switch">
+              已有账号？<span @click="authModal = 'login'; clearAuthError()">去登录</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- 设置弹窗 -->
       <div class="settings-overlay" :class="{ show: settingsOpen }" @click.self="settingsOpen = false">
         <div class="settings-panel">
@@ -475,6 +539,16 @@
             activeTab: 'intro',
             settingsOpen: false,
             theme: localStorage.getItem('theme') || 'dark',
+            // 登录状态
+            user: null,
+            authModal: null,
+            authLoading: false,
+            authError: '',
+            loginUsername: '',
+            loginPassword: '',
+            registerUsername: '',
+            registerPassword: '',
+            registerConfirmPassword: '',
             searchText: '',
             userProjects: JSON.parse(localStorage.getItem('userProjects') || '[]'),
             // 聊天状态
@@ -649,12 +723,136 @@
           activeProject() {
             return this.projectTabs.find((tab) => tab.key === this.activeTab) || this.projectTabs[0];
           },
+          userInitial() {
+            if (!this.user) return '';
+            const name = this.user.display_name || this.user.email || '?';
+            return name.charAt(0).toUpperCase();
+          },
+          userAvatarColor() {
+            if (!this.user) return 'transparent';
+            const str = this.user.display_name || this.user.email || '?';
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+              hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const colors = ['#f0883e', '#58a6ff', '#3fb950', '#a371f7', '#f85149', '#d2991d'];
+            return colors[Math.abs(hash) % colors.length];
+          },
           chatCurrentMessages() {
             const conv = this.chatConversations.find(c => c.id === this.chatCurrentId);
             return conv ? conv.messages : [];
           }
         },
         methods: {
+          // ===== 登录注册方法 =====
+          showAuthModal(mode) {
+            this.authError = '';
+            this.authModal = mode;
+          },
+          clearAuthError() {
+            this.authError = '';
+          },
+          async login() {
+            if (!this.loginUsername || !this.loginPassword) {
+              this.authError = '请输入用户名和密码';
+              return;
+            }
+            if (!this.supabaseReady) {
+              this.authError = '数据库未就绪';
+              return;
+            }
+            this.authLoading = true;
+            this.authError = '';
+            try {
+              const fakeEmail = this.loginUsername + '@toolbox.user';
+              const { data, error } = await this.supabase.auth.signInWithPassword({
+                email: fakeEmail,
+                password: this.loginPassword
+              });
+              if (error) throw error;
+              this.authModal = null;
+              this.loginUsername = '';
+              this.loginPassword = '';
+              await this.loadProfile(data.user);
+            } catch (e) {
+              this.authError = '用户名或密码错误';
+            } finally {
+              this.authLoading = false;
+            }
+          },
+          async register() {
+            if (!this.registerUsername || !this.registerPassword) {
+              this.authError = '请填写用户名和密码';
+              return;
+            }
+            if (this.registerPassword.length < 6) {
+              this.authError = '密码至少 6 位';
+              return;
+            }
+            if (this.registerPassword !== this.registerConfirmPassword) {
+              this.authError = '两次密码输入不一致';
+              return;
+            }
+            if (!this.supabaseReady) {
+              this.authError = '数据库未就绪';
+              return;
+            }
+            this.authLoading = true;
+            this.authError = '';
+            try {
+              const fakeEmail = this.registerUsername + '@toolbox.user';
+              const { data, error } = await this.supabase.auth.signUp({
+                email: fakeEmail,
+                password: this.registerPassword,
+                options: {
+                  data: { display_name: this.registerUsername }
+                }
+              });
+              if (error) throw error;
+              this.authModal = null;
+              this.registerUsername = '';
+              this.registerPassword = '';
+              this.registerConfirmPassword = '';
+              if (data.user) {
+                await this.loadProfile(data.user);
+              }
+            } catch (e) {
+              this.authError = e.message === 'User already registered' ? '用户名已被占用' : (e.message || '注册失败');
+            } finally {
+              this.authLoading = false;
+            }
+          },
+          async loadProfile(authUser) {
+            if (!authUser || !this.supabaseReady) return;
+            try {
+              const { data, error } = await this.supabase
+                .from('profiles')
+                .select('*')
+                .eq('user_id', authUser.id)
+                .maybeSingle();
+              if (error) throw error;
+              this.user = {
+                id: authUser.id,
+                email: authUser.email,
+                display_name: data ? data.display_name : (authUser.user_metadata && authUser.user_metadata.display_name),
+                avatar_url: data ? data.avatar_url : null
+              };
+            } catch (e) {
+              console.warn('加载 profile 失败:', e.message);
+              this.user = {
+                id: authUser.id,
+                email: authUser.email,
+                display_name: (authUser.user_metadata && authUser.user_metadata.display_name) || authUser.email,
+                avatar_url: null
+              };
+            }
+          },
+          async logout() {
+            if (this.supabaseReady) {
+              await this.supabase.auth.signOut();
+            }
+            this.user = null;
+          },
           showtime() {
             const now = new Date().getTime();
             const difference = Math.max(0, now - this.setTime);
@@ -813,6 +1011,23 @@
             this.remoteSurveys = {};
             this.loadSurveysFromSupabase();
             alert('问卷数据已刷新');
+          },
+          initAuth() {
+            if (!this.supabaseReady) return;
+            // 检查当前 session
+            this.supabase.auth.getSession().then(({ data }) => {
+              if (data.session) {
+                this.loadProfile(data.session.user);
+              }
+            });
+            // 监听登录状态变化
+            this.supabase.auth.onAuthStateChange((event, session) => {
+              if (event === 'SIGNED_IN' && session) {
+                this.loadProfile(session.user);
+              } else if (event === 'SIGNED_OUT') {
+                this.user = null;
+              }
+            });
           },
           // ===== 聊天方法 =====
           chatLoadConvs() {
@@ -1080,6 +1295,7 @@
           visitorCounter.fetchAndCount();
           document.documentElement.setAttribute('data-theme', this.theme);
           this.initSupabase();
+          this.initAuth();
           this.chatLoadConvs();
           // 首次加载：如果没有问卷项目，自动创建默认问卷
           if (!this.userProjects.some(p => p.surveyId)) {
