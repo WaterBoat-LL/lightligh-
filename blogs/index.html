@@ -51,10 +51,30 @@
             {{ item.label }}
           </button>
         </nav>
+        <button class="header-hamburger" @click="mobileMenuOpen = !mobileMenuOpen" :class="{ open: mobileMenuOpen }">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
         <div class="header-search">
           <input v-model.trim="searchText" type="text" placeholder="搜索..." />
         </div>
       </header>
+
+      <!-- 移动端导航菜单 -->
+      <div class="mobile-nav-overlay" :class="{ show: mobileMenuOpen }" @click.self="mobileMenuOpen = false">
+        <div class="mobile-nav-panel">
+          <button
+            v-for="item in navItems"
+            :key="item.key"
+            class="mobile-nav-item"
+            :class="{ active: active_Page === item.key }"
+            @click="handleNavClick(item); mobileMenuOpen = false"
+          >
+            {{ item.label }}
+          </button>
+        </div>
+      </div>
 
       <main>
         <section v-show="active_Page === 'intro'" class="page page-intro" id="intro-section">
@@ -68,7 +88,7 @@
             <div class="terminal-body">
               <p class="term-line"><span class="term-prompt">waterboat@lully:~$</span> cat /var/bulletin/announcement.txt</p>
               <div class="bulletin-box">
-                <h1 class="bulletin-title">📢 关于网站部署更改的告知</h1>
+                <h1 class="bulletin-title">📢 关于网站部署域名更改的告知</h1>
                 <p class="bulletin-meta">2026-06-24 · 重要通知</p>
                 <hr class="bulletin-divider" />
                 <p class="bulletin-text">因为网页的结构与技术性调整，为了能成功使用网站的内容，请在如下网址打开网站：</p>
@@ -78,7 +98,7 @@
                     https://waterboat-c5w.pages.dev/blogs/
                   </a>
                 </p>
-                <p class="bulletin-text">希望访客与老师访问此网站下的 <strong>HELPER与PROJECT</strong> 进行使用。</p>
+                <p class="bulletin-text">希望访客与老师访问此网站下的 <strong>HELPER</strong> 进行使用。</p>
               </div>
               <p class="term-line"><span class="term-prompt">waterboat@lully:~$</span> <span class="term-cursor">█</span></p>
             </div>
@@ -207,6 +227,75 @@
                 访问友链
               </a>
             </article>
+          </div>
+        </section>
+
+        <section v-show="active_Page === 'memo'" class="page page-memo">
+          <div class="memo-layout">
+            <aside class="memo-sidebar">
+              <div class="memo-sidebar-header">
+                <button class="memo-back-btn" @click="active_Page = 'projects'" title="返回项目">←</button>
+                <p class="eyebrow">DAILY MEMO</p>
+                <button class="new-memo-btn" @click="memoNew" title="新建备忘录">+</button>
+              </div>
+              <div class="memo-list">
+                <div
+                  v-for="memo in memoSortedList"
+                  :key="memo.id"
+                  class="memo-item"
+                  :class="{ active: memo.id === memoCurrentId }"
+                  @click="memoSelect(memo.id)"
+                >
+                  <span class="memo-item-date">{{ memo.date }}</span>
+                  <span class="memo-item-title">{{ memo.title || '无标题' }}</span>
+                  <button class="memo-item-del" @click.stop="memoDelete(memo.id)">×</button>
+                </div>
+                <div v-if="!memos.length" class="memo-empty">
+                  <p>暂无备忘录</p>
+                  <p class="memo-empty-hint">点击右上角 + 创建第一条备忘录</p>
+                </div>
+              </div>
+            </aside>
+            <div class="memo-main" v-if="memoCurrent">
+              <div class="memo-editor-header">
+                <input
+                  v-model="memoCurrent.title"
+                  type="text"
+                  class="memo-title-input"
+                  placeholder="备忘录标题..."
+                  @input="memoScheduleSave"
+                />
+                <div class="memo-date-picker-wrap">
+                  <button class="memo-date-btn" @click.stop="memoDatePickerOpen = !memoDatePickerOpen" title="选择日期">
+                    {{ memoCurrent.date }}
+                  </button>
+                  <div class="memo-date-dropdown" v-show="memoDatePickerOpen">
+                    <input
+                      type="date"
+                      :value="memoCurrent.date"
+                      class="memo-date-input"
+                      @change="memoChangeDate($event)"
+                    />
+                  </div>
+                </div>
+                <button class="memo-save-btn" @click="memoManualSave" title="保存">
+                  保存
+                </button>
+              </div>
+              <textarea
+                v-model="memoCurrent.content"
+                class="memo-content-input"
+                placeholder="记录今天的想法、待办事项或任何想记住的内容..."
+                @input="memoScheduleSave"
+              ></textarea>
+              <p class="memo-save-status" v-if="memoSaveStatus">{{ memoSaveStatus }}</p>
+            </div>
+            <div class="memo-main memo-main-empty" v-else>
+              <div class="memo-empty-state">
+                <p class="memo-empty-icon">📝</p>
+                <p>选择一个备忘录或创建新的</p>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -370,7 +459,8 @@
               </div>
               <p class="project-card-name">{{ proj.name }}</p>
               <p class="project-card-date">{{ proj.date }}</p>
-              <span class="project-card-tag" v-if="proj.surveyId">问卷</span>
+              <span class="project-card-tag memo-tag" v-if="proj.type === 'memo'">备忘录</span>
+              <span class="project-card-tag" v-else-if="proj.surveyId">问卷</span>
             </div>
           </div>
 
@@ -550,7 +640,7 @@
             registerPassword: '',
             registerConfirmPassword: '',
             searchText: '',
-            userProjects: JSON.parse(localStorage.getItem('userProjects') || '[]'),
+            userProjects: [],
             // 聊天状态
             chatConversations: [],
             chatCurrentId: null,
@@ -614,6 +704,12 @@
                 ]
               }
             },
+            // 备忘录
+            memos: [],
+            memoCurrentId: null,
+            memoAutoSaveTimer: null,
+            memoSaveStatus: '',
+            memoDatePickerOpen: false,
             setTime: new Date('2026-03-04 00:00:00').getTime(),
             day: 0,
             hour: 0,
@@ -621,14 +717,15 @@
             second: 0,
             timer: null,
             navItems: [
-              { key: 'intro', label: 'INTRODUCTION', desc: '站点介绍与粒子动画', icon: '发现.svg' },
-              { key: 'menu', label: 'MENU', desc: '首页与模块入口', icon: '菜单.svg' },
-              { key: 'project', label: 'PART', desc: '项目与智能体介绍', icon: '分类.svg' },
-              { key: 'projects', label: 'PROJECTS', desc: '项目卡片管理', icon: '工具盒.png' },
-              { key: 'blogs', label: 'HELPER', desc: '嵌入式 AI 助手', icon: '服务.svg' },
-              { key: 'pictures', label: 'THANKS', desc: '友链与致谢', icon: '发现.svg' },
-              { key: 'settings', label: 'SETTINGS', desc: '页面设置', icon: '工具.svg', isSettings: true }
+              { key: 'intro', label: '站点介绍', icon: '发现.svg' },
+              { key: 'menu', label: '首页', icon: '菜单.svg' },
+              { key: 'project', label: '分区', icon: '分类.svg' },
+              { key: 'projects', label: '项目管理', icon: '工具盒.png' },
+              { key: 'blogs', label: '智能助手', icon: '服务.svg' },
+              { key: 'pictures', label: '致谢', icon: '发现.svg' },
+              { key: 'settings', label: '设置', icon: '工具.svg', isSettings: true }
             ],
+            mobileMenuOpen: false,
             featureCards: [
               {
                 kicker: '01 / Utility',
@@ -738,12 +835,121 @@
             const colors = ['#f0883e', '#58a6ff', '#3fb950', '#a371f7', '#f85149', '#d2991d'];
             return colors[Math.abs(hash) % colors.length];
           },
+          memoSortedList() {
+            return [...this.memos].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+          },
+          memoCurrent() {
+            return this.memos.find(m => m.id === this.memoCurrentId) || null;
+          },
           chatCurrentMessages() {
             const conv = this.chatConversations.find(c => c.id === this.chatCurrentId);
             return conv ? conv.messages : [];
           }
         },
         methods: {
+          // ===== 用户数据隔离 & Supabase 云同步 =====
+          userStorageKey(key) {
+            return (this.user && this.user.id ? 'u_' + this.user.id + '_' : 'guest_') + key;
+          },
+          async loadUserData() {
+            const p = (k) => this.userStorageKey(k);
+            // 1. 先从 localStorage 加载（瞬时）
+            try { this.memos = JSON.parse(localStorage.getItem(p('memos')) || '[]'); } catch { this.memos = []; }
+            try { this.userProjects = JSON.parse(localStorage.getItem(p('userProjects')) || '[]'); } catch { this.userProjects = []; }
+            try { this.chatConversations = JSON.parse(localStorage.getItem(p('chatConversations')) || '[]'); } catch { this.chatConversations = []; }
+            // 2. 已登录则从 Supabase 拉取云端数据（覆盖本地）
+            if (this.supabaseReady && this.user) {
+              await this.supabasePullAll();
+            }
+            // 3. 设置当前选中
+            this.memoCurrentId = this.memos.length ? this.memos[0].id : null;
+            const savedChatId = localStorage.getItem(p('chatCurrentId'));
+            if (savedChatId && this.chatConversations.find(c => c.id === savedChatId)) {
+              this.chatCurrentId = savedChatId;
+            } else if (this.chatConversations.length) {
+              this.chatCurrentId = this.chatConversations[0].id;
+            } else {
+              this.chatCurrentId = null;
+            }
+            // 4. 自动创建默认项目卡片
+            if (!this.userProjects.some(pr => pr.type === 'memo')) {
+              this.userProjects.unshift({ id: Date.now(), name: '每日备忘录', date: new Date().toISOString().slice(0, 10), type: 'memo' });
+            }
+            if (!this.userProjects.some(pr => pr.surveyId)) {
+              this.userProjects.push({ id: Date.now() + 1, name: '用户反馈问卷', date: '2026-05-28', surveyId: 'feedback' });
+            }
+            this.saveProjects();
+          },
+          // Supabase 拉取所有用户数据
+          async supabasePullAll() {
+            const uid = this.user.id;
+            const p = (k) => this.userStorageKey(k);
+            // 拉取备忘录
+            try {
+              const { data: m } = await this.supabase.from('user_memos').select('*').eq('user_id', uid).order('date', { ascending: false });
+              if (m) {
+                this.memos = m.map(r => ({ id: r.id, date: r.date, title: r.title, content: r.content }));
+                localStorage.setItem(p('memos'), JSON.stringify(this.memos));
+              }
+            } catch (e) { console.warn('拉取备忘录失败:', e.message); }
+            // 拉取项目卡片
+            try {
+              const { data: pr } = await this.supabase.from('user_projects').select('*').eq('user_id', uid);
+              if (pr) {
+                this.userProjects = pr.map(r => {
+                  const o = { id: r.id, name: r.name, date: r.date };
+                  if (r.type) o.type = r.type;
+                  if (r.survey_id) o.surveyId = r.survey_id;
+                  return o;
+                });
+                localStorage.setItem(p('userProjects'), JSON.stringify(this.userProjects));
+              }
+            } catch (e) { console.warn('拉取项目失败:', e.message); }
+            // 拉取对话
+            try {
+              const { data: ch } = await this.supabase.from('user_chats').select('*').eq('user_id', uid);
+              if (ch) {
+                this.chatConversations = ch.map(r => ({
+                  id: r.id, title: r.title, date: r.date, messages: r.messages || [],
+                  conversation_id: r.conversation_id || undefined
+                }));
+                localStorage.setItem(p('chatConversations'), JSON.stringify(this.chatConversations));
+              }
+            } catch (e) { console.warn('拉取对话失败:', e.message); }
+          },
+          // Supabase 推送备忘录
+          supabasePushMemos() {
+            if (!this.supabaseReady || !this.user) return;
+            const uid = this.user.id;
+            const rows = this.memos.map(m => ({ id: m.id, user_id: uid, date: m.date, title: m.title, content: m.content }));
+            this.supabase.from('user_memos').delete().eq('user_id', uid).then(() => {
+              if (rows.length) this.supabase.from('user_memos').insert(rows).then(() => {}, () => {});
+            }, () => {});
+          },
+          // Supabase 推送项目
+          supabasePushProjects() {
+            if (!this.supabaseReady || !this.user) return;
+            const uid = this.user.id;
+            const rows = this.userProjects.map(p => ({
+              id: p.id, user_id: uid, name: p.name, date: p.date,
+              type: p.type || null, survey_id: p.surveyId || null
+            }));
+            this.supabase.from('user_projects').delete().eq('user_id', uid).then(() => {
+              if (rows.length) this.supabase.from('user_projects').insert(rows).then(() => {}, () => {});
+            }, () => {});
+          },
+          // Supabase 推送对话
+          supabasePushChats() {
+            if (!this.supabaseReady || !this.user) return;
+            const uid = this.user.id;
+            const rows = this.chatConversations.map(c => ({
+              id: c.id, user_id: uid, title: c.title, date: c.date,
+              messages: c.messages, conversation_id: c.conversation_id || null
+            }));
+            this.supabase.from('user_chats').delete().eq('user_id', uid).then(() => {
+              if (rows.length) this.supabase.from('user_chats').insert(rows).then(() => {}, () => {});
+            }, () => {});
+          },
           // ===== 登录注册方法 =====
           showAuthModal(mode) {
             this.authError = '';
@@ -837,6 +1043,7 @@
                 display_name: data ? data.display_name : (authUser.user_metadata && authUser.user_metadata.display_name),
                 avatar_url: data ? data.avatar_url : null
               };
+              this.loadUserData();
             } catch (e) {
               console.warn('加载 profile 失败:', e.message);
               this.user = {
@@ -845,6 +1052,7 @@
                 display_name: (authUser.user_metadata && authUser.user_metadata.display_name) || authUser.email,
                 avatar_url: null
               };
+              this.loadUserData();
             }
           },
           async logout() {
@@ -852,6 +1060,7 @@
               await this.supabase.auth.signOut();
             }
             this.user = null;
+            this.loadUserData();
           },
           showtime() {
             const now = new Date().getTime();
@@ -897,7 +1106,8 @@
             this.saveProjects();
           },
           saveProjects() {
-            localStorage.setItem('userProjects', JSON.stringify(this.userProjects));
+            localStorage.setItem(this.userStorageKey('userProjects'), JSON.stringify(this.userProjects));
+            this.supabasePushProjects();
           },
           initSupabase() {
             const url = localStorage.getItem('supabase_url') || 'https://lzizinzjvwckecfjfxaw.supabase.co';
@@ -938,6 +1148,13 @@
             }
           },
           openProjectSurvey(proj) {
+            if (proj.type === 'memo') {
+              this.active_Page = 'memo';
+              if (!this.memoCurrentId && this.memos.length) {
+                this.memoCurrentId = this.memos[0].id;
+              }
+              return;
+            }
             const surveyId = proj.surveyId || 'feedback';
             const survey = this.remoteSurveys[surveyId] || this.defaultSurveys[surveyId];
             if (!survey) return;
@@ -1026,15 +1243,16 @@
                 this.loadProfile(session.user);
               } else if (event === 'SIGNED_OUT') {
                 this.user = null;
+                this.loadUserData();
               }
             });
           },
           // ===== 聊天方法 =====
           chatLoadConvs() {
             try {
-              this.chatConversations = JSON.parse(localStorage.getItem('chatConversations') || '[]');
+              this.chatConversations = JSON.parse(localStorage.getItem(this.userStorageKey('chatConversations')) || '[]');
             } catch { this.chatConversations = []; }
-            const savedId = localStorage.getItem('chatCurrentId');
+            const savedId = localStorage.getItem(this.userStorageKey('chatCurrentId'));
             if (savedId && this.chatConversations.find(c => c.id === savedId)) {
               this.chatCurrentId = savedId;
             } else if (this.chatConversations.length) {
@@ -1042,10 +1260,11 @@
             }
           },
           chatSaveConvs() {
-            localStorage.setItem('chatConversations', JSON.stringify(this.chatConversations));
+            localStorage.setItem(this.userStorageKey('chatConversations'), JSON.stringify(this.chatConversations));
             if (this.chatCurrentId) {
-              localStorage.setItem('chatCurrentId', this.chatCurrentId);
+              localStorage.setItem(this.userStorageKey('chatCurrentId'), this.chatCurrentId);
             }
+            this.supabasePushChats();
           },
           chatHandleFile(e) {
             const file = e.target.files[0];
@@ -1270,6 +1489,64 @@
               this.$nextTick(() => this.chatScrollBottom());
             }
           },
+          // ===== 备忘录方法 =====
+          memoNew() {
+            const now = new Date();
+            const dateStr = now.getFullYear() + '-' +
+              String(now.getMonth() + 1).padStart(2, '0') + '-' +
+              String(now.getDate()).padStart(2, '0');
+            const memo = {
+              id: Date.now(),
+              date: dateStr,
+              title: '',
+              content: ''
+            };
+            this.memos.unshift(memo);
+            this.memoCurrentId = memo.id;
+            this.memoSave();
+          },
+          memoSelect(id) {
+            this.memoCurrentId = id;
+          },
+          memoDelete(id) {
+            const idx = this.memos.findIndex(m => m.id === id);
+            if (idx === -1) return;
+            this.memos.splice(idx, 1);
+            if (this.memoCurrentId === id) {
+              this.memoCurrentId = this.memos.length ? this.memos[0].id : null;
+            }
+            this.memoSave();
+          },
+          memoChangeDate(e) {
+            if (this.memoCurrent) {
+              this.memoCurrent.date = e.target.value;
+              this.memoDatePickerOpen = false;
+              this.memoSave();
+            }
+          },
+          memoManualSave() {
+            this.memoSave();
+            this.memoSaveStatus = '已保存 ✓';
+            setTimeout(() => { this.memoSaveStatus = ''; }, 1200);
+          },
+          memoScheduleSave() {
+            if (this.memoAutoSaveTimer) clearTimeout(this.memoAutoSaveTimer);
+            this.memoSaveStatus = '编辑中...';
+            this.memoAutoSaveTimer = setTimeout(() => {
+              this.memoSave();
+              this.memoSaveStatus = '';
+            }, 600);
+          },
+          memoSave() {
+            localStorage.setItem(this.userStorageKey('memos'), JSON.stringify(this.memos));
+            this.supabasePushMemos();
+          },
+          memoInit() {
+            // 首次加载自动选中最新一条
+            if (this.memos.length && !this.memoCurrentId) {
+              this.memoCurrentId = this.memos[0].id;
+            }
+          },
           renderMarkdown(text) {
             if (!text) return '';
             let html = text
@@ -1292,21 +1569,11 @@
         mounted() {
           this.showtime();
           this.timer = setInterval(this.showtime, 1000);
-          visitorCounter.fetchAndCount();
+          try { visitorCounter.fetchAndCount(); } catch {}
           document.documentElement.setAttribute('data-theme', this.theme);
           this.initSupabase();
           this.initAuth();
-          this.chatLoadConvs();
-          // 首次加载：如果没有问卷项目，自动创建默认问卷
-          if (!this.userProjects.some(p => p.surveyId)) {
-            this.userProjects.push({
-              id: Date.now(),
-              name: '用户反馈问卷',
-              date: '2026-05-28',
-              surveyId: 'feedback'
-            });
-            this.saveProjects();
-          }
+          this.loadUserData();
           // intro 公告栏已改为静态命令行风格，无需动画初始化
         },
         beforeDestroy() {
