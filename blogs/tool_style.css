@@ -329,6 +329,19 @@ a {
 
 .header-avatar-wrap {
   position: relative;
+  /* 扩大 hover 区域，避免鼠标移动到菜单时失焦 */
+  padding-bottom: 12px;
+  margin-bottom: -12px;
+}
+
+.header-avatar-wrap::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 12px;
+  /* 透明桥接层，保持 hover 不断 */
 }
 
 .header-avatar-wrap:hover .avatar-dropdown {
@@ -1665,6 +1678,12 @@ main {
   border-color: rgba(164, 108, 244, 0.5);
   color: var(--purple);
   background: rgba(164, 108, 244, 0.1);
+}
+
+.project-card-tag.tetris-tag {
+  border-color: rgba(255, 165, 0, 0.5);
+  color: var(--orange);
+  background: rgba(255, 165, 0, 0.1);
 }
 
 /* 问卷弹窗样式 */
