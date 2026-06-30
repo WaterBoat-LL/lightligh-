@@ -617,6 +617,9 @@
           </div>
         </div>
       </div>
+
+      <!-- 隐藏链接：俄罗斯方块新标签页（避免弹窗拦截） -->
+      <a ref="tetrisLink" href="tetris.html" target="_blank" style="display:none"></a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
@@ -1178,7 +1181,7 @@
               return;
             }
             if (proj.type === 'tetris') {
-              window.open('tetris.html', '_blank');
+              this.$refs.tetrisLink.click();
               return;
             }
             const surveyId = proj.surveyId || 'feedback';
