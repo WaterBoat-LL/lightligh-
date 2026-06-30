@@ -460,6 +460,7 @@
               <p class="project-card-name">{{ proj.name }}</p>
               <p class="project-card-date">{{ proj.date }}</p>
               <span class="project-card-tag memo-tag" v-if="proj.type === 'memo'">备忘录</span>
+              <span class="project-card-tag tetris-tag" v-if="proj.type === 'tetris'">游戏</span>
               <span class="project-card-tag" v-else-if="proj.surveyId">问卷</span>
             </div>
           </div>
@@ -875,6 +876,9 @@
             if (!this.userProjects.some(pr => pr.type === 'memo')) {
               this.userProjects.unshift({ id: Date.now(), name: '每日备忘录', date: new Date().toISOString().slice(0, 10), type: 'memo' });
             }
+            if (!this.userProjects.some(pr => pr.type === 'tetris')) {
+              this.userProjects.push({ id: Date.now() + 2, name: '俄罗斯方块', date: new Date().toISOString().slice(0, 10), type: 'tetris' });
+            }
             if (!this.userProjects.some(pr => pr.surveyId)) {
               this.userProjects.push({ id: Date.now() + 1, name: '用户反馈问卷', date: '2026-05-28', surveyId: 'feedback' });
             }
@@ -1030,6 +1034,7 @@
           },
           async loadProfile(authUser) {
             if (!authUser || !this.supabaseReady) return;
+            const displayName = (authUser.user_metadata && authUser.user_metadata.display_name) || authUser.email;
             try {
               const { data, error } = await this.supabase
                 .from('profiles')
@@ -1037,10 +1042,16 @@
                 .eq('user_id', authUser.id)
                 .maybeSingle();
               if (error) throw error;
+              // 如果 profiles 表中还没有记录，自动创建
+              if (!data) {
+                await this.supabase
+                  .from('profiles')
+                  .insert({ user_id: authUser.id, display_name: displayName });
+              }
               this.user = {
                 id: authUser.id,
                 email: authUser.email,
-                display_name: data ? data.display_name : (authUser.user_metadata && authUser.user_metadata.display_name),
+                display_name: data ? data.display_name : displayName,
                 avatar_url: data ? data.avatar_url : null
               };
               this.loadUserData();
@@ -1049,7 +1060,7 @@
               this.user = {
                 id: authUser.id,
                 email: authUser.email,
-                display_name: (authUser.user_metadata && authUser.user_metadata.display_name) || authUser.email,
+                display_name: displayName,
                 avatar_url: null
               };
               this.loadUserData();
@@ -1075,6 +1086,12 @@
             this.second = Math.floor((difference % msPerMinute) / 1000);
           },
           handleNavClick(item) {
+            // 权限守卫：项目管理、设置需要登录
+            const protectedPages = ['projects', 'settings'];
+            if (protectedPages.includes(item.key) && !this.user) {
+              this.showAuthModal('login');
+              return;
+            }
             if (item.isSettings) {
               this.settingsOpen = true;
             } else {
@@ -1149,10 +1166,19 @@
           },
           openProjectSurvey(proj) {
             if (proj.type === 'memo') {
+              // 权限守卫：备忘录需要登录
+              if (!this.user) {
+                this.showAuthModal('login');
+                return;
+              }
               this.active_Page = 'memo';
               if (!this.memoCurrentId && this.memos.length) {
                 this.memoCurrentId = this.memos[0].id;
               }
+              return;
+            }
+            if (proj.type === 'tetris') {
+              window.open('tetris.html', '_blank');
               return;
             }
             const surveyId = proj.surveyId || 'feedback';
