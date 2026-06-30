@@ -672,7 +672,16 @@ canvas#preview {
   排行榜 <span class="arrow">&#9660;</span>
 </button>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// 异步加载 Supabase SDK（不阻塞游戏启动）
+(function(){
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  s.onload = function(){ initSupabase(); };
+  s.onerror = function(){ initSupabase(); };
+  document.head.appendChild(s);
+})();
+</script>
 <script>
 // ============ 检测移动端，显示对应规则 ============
 if (window.matchMedia('(max-width: 750px)').matches) {
@@ -1016,7 +1025,8 @@ document.addEventListener('touchstart', e => {
 }, { passive: false });
 
 // ============ 初始化 ============
-initSupabase();
+// 游戏不依赖 Supabase，立即可以玩
+// Supabase 加载完成后自动初始化排行榜
 </script>
 </body>
 </html>
