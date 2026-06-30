@@ -676,7 +676,7 @@ canvas#preview {
 // 异步加载 Supabase SDK（不阻塞游戏启动）
 (function(){
   var s = document.createElement('script');
-  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  s.src = 'supabase.js';
   s.onload = function(){ initSupabase(); };
   s.onerror = function(){ initSupabase(); };
   document.head.appendChild(s);
