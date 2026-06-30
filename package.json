@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "node api/_dev-server.js",
-    "start": "node api/_dev-server.js"
+    "start": "node api/_dev-server.js",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
   },
   "repository": {
     "type": "git",
@@ -18,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/WaterBoat-LL/lightligh-/issues"
   },
-  "homepage": "https://github.com/WaterBoat-LL/lightligh-#readme"
+  "homepage": "https://github.com/WaterBoat-LL/lightligh-#readme",
+  "devDependencies": {
+    "wrangler": "^4.105.0"
+  }
 }
